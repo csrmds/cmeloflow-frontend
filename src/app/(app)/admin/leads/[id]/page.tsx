@@ -21,9 +21,7 @@ function AdminEditarLeadContent({ id }: { id: number }) {
         setLoading(false);
       }
     })();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [id]);
 
   return (

@@ -63,7 +63,7 @@ function AdminProdutosContent() {
             <TableHead>Descrição</TableHead>
             <TableHead className="w-32">Preço</TableHead>
             <TableHead className="w-28">Tipo</TableHead>
-            <TableHead className="w-24">Status</TableHead>
+            <TableHead className="w-26">Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

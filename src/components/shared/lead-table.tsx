@@ -11,7 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { NormalizedLead } from "@/lib/services/leads";
+//import type { NormalizedLead } from "@/lib/services/leads";
+import type { ClientLeadView } from "@/lib/types";
 
 const statusLabel: Record<string, string> = {
   novo: "Novo",
@@ -32,7 +33,7 @@ function formatDate(value: string | null) {
 }
 
 interface LeadTableProps {
-  leads: NormalizedLead[];
+  leads: ClientLeadView[];
   loading?: boolean;
   showClient?: boolean;
   basePath?: string;
@@ -55,8 +56,8 @@ export function LeadTable({
           <TableHead>WhatsApp</TableHead>
           <TableHead>Instagram</TableHead>
           {showClient && <TableHead>Cliente</TableHead>}
-          <TableHead className="w-32">Status</TableHead>
-          <TableHead className="w-32">Handover</TableHead>
+          <TableHead className="">Status</TableHead>
+          <TableHead className="w-32">Atendimento</TableHead>
           <TableHead className="w-40">Atualizado</TableHead>
         </TableRow>
       </TableHeader>
@@ -68,18 +69,18 @@ export function LeadTable({
         ) : (
           leads.map((lead) => (
             <TableRow
-              key={lead.id}
-              onClick={() => router.push(`${basePath}/${lead.id}`)}
+              key={lead.lead_id}
+              onClick={() => router.push(`${basePath}/${lead.lead_id}`)}
               className="cursor-pointer"
             >
               <TableCell className="font-medium">
-                {lead.name || "—"}
+                {lead.lead_name || "—"}
               </TableCell>
               <TableCell className="text-muted-foreground">
-                {lead.whatsapp_number || "—"}
+                {lead.lead_whatsapp_number || "—"}
               </TableCell>
               <TableCell className="text-muted-foreground">
-                {lead.instagram_username || "—"}
+                {lead.lead_instagram_username || "—"}
               </TableCell>
               {showClient && (
                 <TableCell>
@@ -88,22 +89,18 @@ export function LeadTable({
               )}
               <TableCell>
                 <span className="rounded-md bg-secondary px-2 py-0.5 text-xs">
-                  {statusLabel[lead.status ?? ""] ?? lead.status ?? "—"}
+                  {statusLabel[lead.lead_status ?? ""] ?? lead.lead_status ?? "—"}
                 </span>
               </TableCell>
               <TableCell>
-                {lead.human_handover ? (
-                  <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-600 dark:text-amber-400">
-                    Humano
-                  </span>
+                {Number(lead.lead_human_handover) === 1 ? (
+                  <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-600 dark:text-amber-400">Humano</span>
                 ) : (
-                  <span className="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                    IA
-                  </span>
+                  <span className="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">IA</span>
                 )}
               </TableCell>
               <TableCell className="text-muted-foreground">
-                {formatDate(lead.updated_at)}
+                {formatDate(lead.lead_updated_at)}
               </TableCell>
             </TableRow>
           ))

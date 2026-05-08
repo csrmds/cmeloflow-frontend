@@ -7,19 +7,22 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/shared/page-header";
 import { LeadTable } from "@/components/shared/lead-table";
 import { AuthGuard } from "@/components/shared/auth-guard";
-import { listLeads, type NormalizedLead } from "@/lib/services/leads";
+import { ClientLeadView } from "@/lib/types"; 
+import { api } from "@/lib/api";
+//import { listLeads, type NormalizedLead } from "@/lib/services/leads";
 
 function AdminLeadsContent() {
-  const [items, setItems] = React.useState<NormalizedLead[]>([]);
+  const [items, setItems] = React.useState<ClientLeadView[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const data = await listLeads();
+      const res = await api.get<ClientLeadView[]>("/leads");
+      console.log("res.data: ", res.data)
       if (!cancelled) {
-        setItems(data);
+        setItems(res.data);
         setLoading(false);
       }
     })();

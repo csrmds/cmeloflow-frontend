@@ -35,26 +35,38 @@ export interface ClientPhone {
 }
 
 export interface Lead {
-  id?: number;
-  lead_id?: number;
+  id: number;
   client_id: number;
-  client_name?: string;
-  instagram_scoped_userid?: string | null;
-  lead_instagram_scoped_userid?: string | null;
-  instagram_username?: string | null;
-  lead_instagram_username?: string | null;
-  name?: string | null;
-  whatsapp_number?: string | null;
-  lead_whatsapp_number?: string | null;
-  first_message?: string | null;
-  last_message?: string | null;
-  source?: string | null;
-  status?: string | null;
-  lead_status?: string | null;
-  human_handover?: string | number | null;
-  lead_human_handover?: string | number | null;
-  created_at?: string | null;
-  updated_at?: string | null;
+  instagram_scoped_userid: string | null;
+  instagram_username: string | null;
+  name: string | null;
+  whatsapp_number: string | null;
+  first_message: string | null;
+  last_message: string | null;
+  source: string | null;
+  status: string | null;
+  human_handover: number;
+  notes: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+export interface ClientLeadView {
+  client_id: number;
+  client_name: string | null;
+  client_instagram_id: string | null;
+  client_instagram_username: string | null;
+  client_whatsapp_number: string | null;
+  lead_id: number;
+  lead_name: string | null;
+  lead_instagram_scoped_userid: string | null;
+  lead_instagram_username: string | null;
+  lead_whatsapp_number: string | null;
+  lead_status: string | null;
+  lead_source: string | null;
+  lead_human_handover: string | number | null;
+  lead_updated_at: string | null;
+  lead_created_at: string | null;
 }
 
 export type ProductType = "produto" | "servico";

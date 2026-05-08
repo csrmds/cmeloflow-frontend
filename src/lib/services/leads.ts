@@ -18,30 +18,32 @@ interface NormalizedLead {
   source: string | null;
   first_message: string | null;
   last_message: string | null;
+  notes: string | null;
   created_at: string | null;
   updated_at: string | null;
 }
 
 function normalize(row: Lead): NormalizedLead {
   return {
-    id: (row.id ?? row.lead_id ?? 0) as number,
+    id: (row.id ?? row.id ?? 0) as number,
     client_id: row.client_id,
-    client_name: row.client_name,
+    //client_name: row.client_name,
     name: (row.name ?? null) as string | null,
-    whatsapp_number: (row.whatsapp_number ?? row.lead_whatsapp_number ?? null) as
+    whatsapp_number: (row.whatsapp_number ?? row.whatsapp_number ?? null) as
       | string
       | null,
     instagram_username: (row.instagram_username ??
-      row.lead_instagram_username ??
+      row.instagram_username ??
       null) as string | null,
     instagram_scoped_userid: (row.instagram_scoped_userid ??
-      row.lead_instagram_scoped_userid ??
+      row.instagram_scoped_userid ??
       null) as string | null,
-    status: (row.status ?? row.lead_status ?? null) as string | null,
-    human_handover: Number(row.human_handover ?? row.lead_human_handover ?? 0),
+    status: (row.status ?? row.status ?? null) as string | null,
+    human_handover: Number(row.human_handover ?? row.human_handover ?? 0),
     source: row.source ?? null,
     first_message: row.first_message ?? null,
     last_message: row.last_message ?? null,
+    notes: row.notes ?? null,
     created_at: row.created_at ?? null,
     updated_at: row.updated_at ?? null,
   };
