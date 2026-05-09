@@ -128,7 +128,7 @@ export function LeadForm({
 					{showClientField && (
 						<div className="space-y-1.5 sm:col-span-2">
 							<Label htmlFor="client_id">Cliente (ID)</Label>
-							<Input id="client_id" type="number" {...register("client_id")} />
+							<Input id="client_id" type="number" readOnly {...register("client_id")} />
 						</div>
 					)}
 

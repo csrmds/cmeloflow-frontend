@@ -82,5 +82,6 @@ export interface Product {
   keywords: string | null;
   created_at: string | null;
   updated_at: string | null;
+  client_name?: string | null;
   whatsapp_number?: string | null;
 }
