@@ -48,7 +48,7 @@ function LoginForm() {
 
   React.useEffect(() => {
     console.log("useEffect API_URL: ", API_URL)
-    console.log("useEffect process.env: ", process.env)
+    console.log("useEffect NODE_ENV: ", process.env.NODE_ENV)
     if (params.get("error") === "oauth") {
       setServerError("Falha na autenticação com Google. Tente novamente.");
     }
