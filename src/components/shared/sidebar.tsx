@@ -8,6 +8,7 @@ import {
   ChevronRight,
   House as Home,
   Package,
+  Workflow,
   PanelsTopLeft,
   Sparkles,
   User,
@@ -61,6 +62,12 @@ const adminNav: NavItem[] = [
     href: "/admin/produtos",
     icon: Package,
     match: (p) => p.startsWith("/admin/produtos"),
+  },
+  {
+    label: "Workflows",
+    href: "/admin/workflow",
+    icon: Workflow,
+    match: (p) => p.startsWith("/admin/workflow"),
   },
 ];
 

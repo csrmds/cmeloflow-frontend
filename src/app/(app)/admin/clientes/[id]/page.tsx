@@ -5,10 +5,10 @@ import { useParams } from "next/navigation";
 import { PageHeader } from "@/components/shared/page-header";
 import { ClientForm } from "@/components/shared/client-form";
 import { ClientPhones } from "@/components/shared/client-phones";
-//import { ClientWorkflows } from "@/components/shared/client-workflows";
+import { ClientWorkflows } from "@/components/shared/client-workflows";
 import { AuthGuard } from "@/components/shared/auth-guard";
 import { api, extractErrorMessage } from "@/lib/api";
-import type { Client, Workflow } from "@/lib/types";
+import type { Client } from "@/lib/types";
 
 function EditarClienteContent({ id }: { id: number }) {
 	const [client, setClient] = React.useState<Client | null>(null);
@@ -47,7 +47,7 @@ function EditarClienteContent({ id }: { id: number }) {
 				<>
 					<ClientForm client={client} />
 					<ClientPhones clientId={client.id} />
-					{/* <ClientWorkflows clientId={client.id} /> */}
+					<ClientWorkflows clientId={client.id} />
 				</>
 			) : null}
 		</div>

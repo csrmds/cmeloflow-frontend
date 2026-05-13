@@ -75,6 +75,7 @@ function ClientesContent() {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>ID</TableHead>
             <TableHead>Nome</TableHead>
             <TableHead>E-mail</TableHead>
             <TableHead>WhatsApp</TableHead>
@@ -95,24 +96,15 @@ function ClientesContent() {
                 onClick={() => router.push(`/admin/clientes/${c.id}`)}
                 className="cursor-pointer"
               >
+                <TableCell className="font-medium">{c.id || "—"}</TableCell>
                 <TableCell className="font-medium">{c.name || "—"}</TableCell>
-                <TableCell className="text-muted-foreground">
-                  {c.email || "—"}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {c.whatsapp_number || "—"}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {c.instagram_username || "—"}
-                </TableCell>
+                <TableCell className="text-muted-foreground">{c.email || "—"}</TableCell>
+                <TableCell className="text-muted-foreground">{c.whatsapp_number || "—"}</TableCell>
+                <TableCell className="text-muted-foreground">{c.instagram_username || "—"}</TableCell>
                 <TableCell>
-                  <span className="rounded-md bg-secondary px-2 py-0.5 text-xs">
-                    {c.status || "—"}
-                  </span>
+                  <span className="rounded-md bg-secondary px-2 py-0.5 text-xs">{c.status || "—"}</span>
                 </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {formatDate(c.created_at)}
-                </TableCell>
+                <TableCell className="text-muted-foreground">{formatDate(c.created_at)}</TableCell>
               </TableRow>
             ))
           )}
