@@ -4,3 +4,16 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
+
+export function formatDate(value: string | null) {
+	if (!value) return "—";
+	try {
+		return new Intl.DateTimeFormat("pt-BR", {
+			dateStyle: "short",
+			timeStyle: "short",
+		}).format(new Date(value));
+	} catch {
+		return value;
+	}
+}

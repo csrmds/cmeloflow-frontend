@@ -12,6 +12,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import type { ClientLeadView } from "@/lib/types";
+import { formatDate } from "@/lib/utils";
 
 const statusLabel: Record<string, string> = {
 	novo: "Novo",
@@ -19,17 +20,6 @@ const statusLabel: Record<string, string> = {
 	fechado: "Fechado",
 };
 
-function formatDate(value: string | null) {
-	if (!value) return "—";
-	try {
-		return new Intl.DateTimeFormat("pt-BR", {
-			dateStyle: "short",
-			timeStyle: "short",
-		}).format(new Date(value));
-	} catch {
-		return value;
-	}
-}
 
 interface LeadTableProps {
 	leads: ClientLeadView[];
@@ -60,6 +50,7 @@ export function LeadTable({
 					<TableHead className="w-40">Atualizado</TableHead>
 				</TableRow>
 			</TableHeader>
+			
 			<TableBody>
 				{loading ? (
 					<TableEmpty colSpan={cols}>Carregando…</TableEmpty>
