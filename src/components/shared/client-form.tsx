@@ -13,16 +13,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { api, extractErrorMessage } from "@/lib/api";
 import type { Client } from "@/lib/types";
-//import { Select } from "radix-ui";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 const schema = z.object({
+	id: z.number(),
 	name: z.string().min(3, "Nome obrigatório"),
 	email: z.string().email("E-mail inválido").or(z.literal("")).optional(),
 	instagram_id: z.string().optional(),
 	instagram_username: z.string().optional(),
-	instagram_name: z.string().optional(),
-	whatsapp_number: z.string().optional(),
 	status: z.string().optional(),
 	about: z.string().optional(),
 });
@@ -48,12 +46,11 @@ export function ClientForm({ client }: ClientFormProps) {
 	} = useForm<FormValues>({
 		resolver: zodResolver(schema),
 		defaultValues: {
+			id: client?.id,
 			name: client?.name ?? "",
 			email: client?.email ?? "",
 			instagram_id: client?.instagram_id ?? "",
 			instagram_username: client?.instagram_username ?? "",
-			instagram_name: client?.instagram_name ?? "",
-			whatsapp_number: client?.whatsapp_number ?? "",
 			status: client?.status ?? "",
 			about: client?.about ?? "",
 		},
@@ -92,12 +89,9 @@ export function ClientForm({ client }: ClientFormProps) {
 
 	return (
 		<>
-			<form
-				onSubmit={handleSubmit(onSubmit)}
-				className="space-y-6 rounded-xl border border-border bg-card p-6 shadow-sm"
-			>
-				<div className="grid gap-4 sm:grid-cols-2">
-					<div className="space-y-1.5 sm:col-span-2">
+			<form onSubmit={handleSubmit(onSubmit)} className="space-y-6 rounded-xl border border-border bg-card p-6 shadow-sm" >
+				<div className="grid gap-4 sm:grid-cols-12">
+					<div className="space-y-1.5 sm:col-span-10">
 						<Label htmlFor="name">Nome</Label>
 						<Input id="name" {...register("name")} />
 						{errors.name && (
@@ -105,31 +99,24 @@ export function ClientForm({ client }: ClientFormProps) {
 						)}
 					</div>
 
-					<div className="space-y-1.5">
+					<div className="space-y-1.5 sm:col-span-2">
+						<Label htmlFor="name">Id</Label>
+						<Input id="ID" readOnly {...register("id")} />
+					</div>
+
+					<div className="space-y-1.5 sm:col-span-6">
 						<Label htmlFor="email">E-mail</Label>
 						<Input id="email" type="email" {...register("email")} />
 					</div>
 
-					<div className="space-y-1.5">
-						<Label htmlFor="whatsapp_number">WhatsApp</Label>
-						<Input id="whatsapp_number" {...register("whatsapp_number")} />
-					</div>
-
-					<div className="space-y-1.5">
+					<div className="space-y-1.5 sm:col-span-6">
 						<Label htmlFor="instagram_username">Instagram Username</Label>
 						<Input id="instagram_username" readOnly {...register("instagram_username")} />
 					</div>
 
-					{/* <div className="space-y-1.5">
-            <Label htmlFor="status">Status</Label>
-            <Input id="status" {...register("status")} />
-          </div> */}
-					<div className="space-y-1.5">
+					<div className="space-y-1.5 sm:col-span-6">
 						<Label>Status</Label>
-						<Select 
-							value={status}
-							onValueChange={(v) => setValue("status", v as "ativo" | "inativo")}
-							>
+						<Select  value={status} onValueChange={(v) => setValue("status", v as "ativo" | "inativo")} >
 							<SelectTrigger> <SelectValue/> </SelectTrigger>
 							<SelectContent>
 								<SelectItem value="inativo">Inativo</SelectItem>
@@ -138,7 +125,7 @@ export function ClientForm({ client }: ClientFormProps) {
 						</Select>
 					</div>
 
-					<div className="space-y-1.5 sm:col-span-2">
+					<div className="space-y-1.5 sm:col-span-12">
 						<Label htmlFor="about">Sobre</Label>
 						<Textarea id="about" rows={5} {...register("about")} />
 					</div>
@@ -150,8 +137,7 @@ export function ClientForm({ client }: ClientFormProps) {
 
 				<div className="flex flex-wrap items-center justify-between gap-2">
 					<div className="flex gap-2">
-						<Button type="submit" disabled={isSubmitting}>
-							{isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+						<Button type="submit" disabled={isSubmitting}> {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
 							Salvar
 						</Button>
 						<Button type="button" variant="outline" onClick={() => router.back()} >

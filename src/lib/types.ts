@@ -16,7 +16,7 @@ export interface Client {
 	instagram_username: string | null;
 	instagram_name: string | null;
 	instagram_photo: string | null;
-	whatsapp_number: string | null;
+	// whatsapp_number: string | null;
 	status: string | null;
 	about: string | null;
 	created_at: string | null;

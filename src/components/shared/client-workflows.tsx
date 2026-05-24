@@ -58,6 +58,7 @@ export function ClientWorkflows({ clientId }: ClientWorkflowsProps) {
 		setError(null);
 		try {
 			const res = await api.get<ApiResponse<ClientWorkflow[]>>(`/workflow/client/${clientId}`);
+			console.log("api response: ", res.data)
 			setClientWorkflows(res.data.data ?? []);
 		} catch (err) {
 			setError(extractErrorMessage(err, "Erro ao carregar workflows do cliente."));

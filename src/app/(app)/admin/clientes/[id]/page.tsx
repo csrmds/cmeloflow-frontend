@@ -21,6 +21,7 @@ function EditarClienteContent({ id }: { id: number }) {
 			setLoading(true);
 			try {
 				const res = await api.get<Client>(`/clients/${id}`);
+				console.log("GEt Cliente: ", res.data)
 				if (!cancelled) setClient(res.data);
 			} catch (err) {
 				if (!cancelled) setError(extractErrorMessage(err, "Erro ao carregar."));
