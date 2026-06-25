@@ -4,7 +4,7 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader as Loader2, Plus, Trash2 } from "lucide-react";
+import { Loader as Loader2, Plus, Trash2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,6 +36,8 @@ import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { api, extractErrorMessage } from "@/lib/api";
 import type { ClientPhone } from "@/lib/types";
 
+
+
 const schema = z.object({
 	phone_number: z.string().min(1, "Número obrigatório"),
 	label: z.string().optional(),
@@ -55,6 +57,7 @@ export function ClientPhones({ clientId }: ClientPhonesProps) {
 	const [loading, setLoading] = React.useState(true);
 	const [error, setError] = React.useState<string | null>(null);
 	const [open, setOpen] = React.useState(false);
+	const [editPhone, setEditPhone] = React.useState<ClientPhone | null>(null);
 	const [deleteId, setDeleteId] = React.useState<number | null>(null);
 
 	const refresh = React.useCallback(async () => {
@@ -109,7 +112,7 @@ export function ClientPhones({ clientId }: ClientPhonesProps) {
 						<TableHead className="w-24">Role</TableHead>
 						<TableHead className="w-24">Principal</TableHead>
 						<TableHead className="w-24">Ativo</TableHead>
-						<TableHead className="w-12" />
+						<TableHead className="w-24" />
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -132,13 +135,11 @@ export function ClientPhones({ clientId }: ClientPhonesProps) {
 								<TableCell>{Number(p.is_primary) ? "Sim" : "Não"}</TableCell>
 								<TableCell>{Number(p.active) ? "Sim" : "Não"}</TableCell>
 								<TableCell>
-									<Button
-										variant="ghost"
-										size="icon-sm"
-										onClick={() => setDeleteId(p.id)}
-										aria-label="Excluir"
-									>
+									<Button variant="ghost" size="icon-sm" onClick={() => setDeleteId(p.id)} aria-label="Excluir" >
 										<Trash2 className="h-4 w-4 text-destructive" />
+									</Button>
+									<Button variant="ghost" size="icon-sm" onClick={() => setEditPhone(p)} aria-label="Editar" >
+										<Pencil className="h-4 w-4" />
 									</Button>
 								</TableCell>
 							</TableRow>
@@ -148,9 +149,15 @@ export function ClientPhones({ clientId }: ClientPhonesProps) {
 			</Table>
 
 			<PhoneFormDialog
-				open={open}
-				onOpenChange={setOpen}
+				open={open || editPhone !== null}
+				onOpenChange={(o) => {
+					if (!o) {
+						setOpen(false);
+						setEditPhone(null);
+					}
+				}}
 				clientId={clientId}
+				phone={editPhone}
 				onSaved={refresh}
 			/>
 
@@ -171,6 +178,7 @@ interface PhoneFormDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	clientId: number;
+	phone?: ClientPhone | null;
 	onSaved: () => Promise<void> | void;
 }
 
@@ -178,8 +186,10 @@ function PhoneFormDialog({
 	open,
 	onOpenChange,
 	clientId,
+	phone,
 	onSaved,
 }: PhoneFormDialogProps) {
+	const isEdit = Boolean(phone);
 	const [serverError, setServerError] = React.useState<string | null>(null);
 	const {
 		register,
@@ -200,8 +210,15 @@ function PhoneFormDialog({
 	});
 
 	React.useEffect(() => {
-		if (open) reset();
-	}, [open, reset]);
+		if (!open) return;
+		reset({
+			phone_number: phone?.phone_number ?? "",
+			label: phone?.label ?? "",
+			role: (phone?.role as "ai" | "human") ?? "human",
+			is_primary: Boolean(Number(phone?.is_primary ?? 0)),
+			active: phone ? Boolean(Number(phone.active)) : true,
+		});
+	}, [open, phone, reset]);
 
 	const role = watch("role");
 	const isPrimary = watch("is_primary");
@@ -209,16 +226,23 @@ function PhoneFormDialog({
 
 	const onSubmit = async (values: FormValues) => {
 		setServerError(null);
+		const payload = {
+			...values,
+			is_primary: values.is_primary ? 1 : 0,
+			active: values.active ? 1 : 0,
+		};
 		try {
-			await api.post(`/clients/${clientId}/phones`, {
-				...values,
-				is_primary: values.is_primary ? 1 : 0,
-				active: values.active ? 1 : 0,
-			});
+			if (isEdit && phone) {
+				await api.put(`/clients/${clientId}/phones/${phone.id}`, payload);
+			} else {
+				await api.post(`/clients/${clientId}/phones`, payload);
+			}
 			onOpenChange(false);
 			await onSaved();
 		} catch (err) {
-			setServerError(extractErrorMessage(err, "Falha ao salvar telefone."));
+			setServerError(
+				extractErrorMessage(err, isEdit ? "Falha ao atualizar telefone." : "Falha ao salvar telefone.")
+			);
 		}
 	};
 
@@ -226,7 +250,7 @@ function PhoneFormDialog({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Adicionar telefone</DialogTitle>
+					<DialogTitle>{isEdit ? "Editar telefone" : "Adicionar telefone"}</DialogTitle>
 				</DialogHeader>
 
 				<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

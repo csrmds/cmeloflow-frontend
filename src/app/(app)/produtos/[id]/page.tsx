@@ -21,7 +21,7 @@ export default function EditarProdutoPage() {
       try {
         // backend não expõe GET /products/:id — buscamos da listagem.
         const res = await api.get<Product[]>("/products");
-        const found = res.data.find((p) => p.id === id) ?? null;
+        const found = res.data.data.find((p) => p.id === id) ?? null;
         if (!cancelled) {
           if (!found) setError("Produto não encontrado.");
           setProduct(found);

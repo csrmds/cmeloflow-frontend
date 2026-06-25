@@ -5,8 +5,8 @@ import { useParams } from "next/navigation";
 import { PageHeader } from "@/components/shared/page-header";
 import { ProductForm } from "@/components/shared/product-form";
 import { AuthGuard } from "@/components/shared/auth-guard";
-import { listAllProducts } from "@/lib/services/admin-products";
 import type { Product } from "@/lib/types";
+import { api, extractErrorMessage } from "@/lib/api";
 
 function AdminEditarProdutoContent({ id }: { id: number }) {
   const [product, setProduct] = React.useState<Product | null>(null);
@@ -17,13 +17,15 @@ function AdminEditarProdutoContent({ id }: { id: number }) {
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const all = await listAllProducts();
-      const found = all.find((p) => p.id === id) ?? null;
-      if (!cancelled) {
-        if (!found) setError("Produto não encontrado.");
-        setProduct(found);
-        setLoading(false);
-      }
+		try {
+			const res = await api.get<Product>(`/products/${id}`)
+			//console.log("Res.data: ", res.data)
+			if (!cancelled) setProduct(res.data.data[0])
+		} catch (err) {
+			if (!cancelled) setError(extractErrorMessage(err, "Erro ao carregar produto"))
+		} finally {
+			if (!cancelled) setLoading(false)
+		}
     })();
     return () => {
       cancelled = true;

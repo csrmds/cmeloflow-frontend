@@ -15,7 +15,6 @@ import {
 import { AuthGuard } from "@/components/shared/auth-guard";
 import { api, extractErrorMessage } from "@/lib/api";
 import type { Product } from "@/lib/types";
-//import { listAllProducts, type AdminProductRow, } from "@/lib/services/admin-products";
 
 const currency = new Intl.NumberFormat("pt-BR", {
 	style: "currency",
@@ -39,8 +38,8 @@ function AdminProdutosContent() {
 			setLoading(true);
 			try {
 				const res = await api.get<Product[]>("/products");
-				console.log("Res: ", res.data)
-				if (!cancelled) setItems(res.data);
+				//console.log("Res: ", res.data.data)
+				if (!cancelled) setItems(res.data.data);
 			} catch (err) {
 				if (!cancelled) setError(extractErrorMessage(err, "Erro ao carregar produtos."));
 			} finally {
@@ -54,10 +53,7 @@ function AdminProdutosContent() {
 
 	return (
 		<div>
-			<PageHeader
-				title="Todos os Produtos"
-				description="Produtos cadastrados por todos os clientes da plataforma."
-			/>
+			<PageHeader title="Todos os Produtos" description="Produtos cadastrados por todos os clientes da plataforma." />
 
 			{error && <p className="mb-4 text-sm text-destructive">{error}</p>}
 

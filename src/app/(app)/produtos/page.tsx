@@ -40,7 +40,7 @@ export default function ProdutosPage() {
 			setLoading(true);
 			try {
 				const res = await api.get<Product[]>("/products");
-				if (!cancelled) setItems(res.data);
+				if (!cancelled) setItems(res.data.data);
 			} catch (err) {
 				if (!cancelled) setError(extractErrorMessage(err, "Erro ao carregar produtos."));
 			} finally {

@@ -32,6 +32,7 @@ export interface ClientPhone {
 	is_primary: number | boolean;
 	active: number | boolean;
 	created_at: string | null;
+	updated_at: string | null;
 }
 
 export interface Lead {
@@ -83,7 +84,7 @@ export interface Product {
 	created_at: string | null;
 	updated_at: string | null;
 	client_name?: string | null;
-	whatsapp_number?: string | null;
+	//whatsapp_number?: string | null;
 }
 
 
