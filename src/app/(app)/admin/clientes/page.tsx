@@ -17,7 +17,7 @@ import {
 import { PageHeader } from "@/components/shared/page-header";
 import { AuthGuard } from "@/components/shared/auth-guard";
 import { api, extractErrorMessage } from "@/lib/api";
-import type { Client } from "@/lib/types";
+import type { Client, ApiResponse } from "@/lib/types";
 
 function formatDate(value: string | null) {
   if (!value) return "—";
@@ -41,8 +41,9 @@ function ClientesContent() {
     (async () => {
       setLoading(true);
       try {
-        const res = await api.get<Client[]>("/clients");
-        if (!cancelled) setItems(res.data);
+        const res = await api.get<ApiResponse<Client[]>>("/clients");
+		  console.log("res: ", res.data)
+        if (!cancelled) setItems(res.data.data);
       } catch (err) {
         if (!cancelled)
           setError(extractErrorMessage(err, "Erro ao carregar clientes."));

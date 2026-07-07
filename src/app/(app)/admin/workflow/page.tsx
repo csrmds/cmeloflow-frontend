@@ -1,8 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
-import axios from "axios";
+//import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/shared/page-header";
 import {
 	Table,
@@ -13,7 +12,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { AuthGuard } from "@/components/shared/auth-guard";
+//import { AuthGuard } from "@/components/shared/auth-guard";
 import { api, extractErrorMessage } from "@/lib/api";
 import { Workflow, TagWorkflow, ApiResponse } from "@/lib/types"
 import { formatDate } from "@/lib/utils";
@@ -21,7 +20,7 @@ import { formatDate } from "@/lib/utils";
 
 
 export default function WorkflowPage() {
-	const router = useRouter()
+	//const router = useRouter()
 	const [items, setItems] = React.useState<Workflow[]>([])
 	const [loading, setLoading] = React.useState(true)
 	const [error, setError] = React.useState<string | null>(null)
@@ -73,7 +72,7 @@ export default function WorkflowPage() {
 							<TableCell className="font-medium flex flex-wrap gap-1">
 								{Array.isArray(workflow.tags)
 									? (workflow.tags as TagWorkflow[]).map((tag) => (
-										<span className="rounded-md bg-secondary px-2 py-0.5 text-xs">{tag.name}</span>
+										<span className="rounded-md bg-secondary px-2 py-0.5 text-xs" key={tag.id}>{tag.name}</span>
 									)) : "-" }
 							</TableCell>
 							<TableCell className="font-medium">{ formatDate(workflow.updatedAt) }</TableCell>

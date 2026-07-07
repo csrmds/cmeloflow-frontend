@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/table";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { api, extractErrorMessage } from "@/lib/api";
-import type { ClientPhone } from "@/lib/types";
+import type { ClientPhone, ApiResponse } from "@/lib/types";
 
 
 
@@ -63,8 +63,8 @@ export function ClientPhones({ clientId }: ClientPhonesProps) {
 	const refresh = React.useCallback(async () => {
 		setLoading(true);
 		try {
-			const res = await api.get<ClientPhone[]>(`/clients/${clientId}/phones`);
-			setPhones(res.data);
+			const res = await api.get<ApiResponse<ClientPhone[]>>(`/clients/${clientId}/phones`);
+			setPhones(res.data.data);
 		} catch (err) {
 			setError(extractErrorMessage(err, "Erro ao carregar telefones."));
 		} finally {

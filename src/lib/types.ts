@@ -107,9 +107,9 @@ export interface TagWorkflow {
 	createdAt: string | null
 }
 
-export interface ApiResponse<T> {
+export interface ApiResponse<Type> {
   success: boolean;
   message: string;
-  data: T;
+  data: Type;
   error: string | null;
 }

@@ -16,7 +16,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { api, extractErrorMessage } from "@/lib/api";
-import type { Product } from "@/lib/types";
+import type { Product, ApiResponse } from "@/lib/types";
 
 const currency = new Intl.NumberFormat("pt-BR", {
 	style: "currency",
@@ -39,7 +39,7 @@ export default function ProdutosPage() {
 		(async () => {
 			setLoading(true);
 			try {
-				const res = await api.get<Product[]>("/products");
+				const res = await api.get<ApiResponse<Product[]>>("/products");
 				if (!cancelled) setItems(res.data.data);
 			} catch (err) {
 				if (!cancelled) setError(extractErrorMessage(err, "Erro ao carregar produtos."));
@@ -86,11 +86,7 @@ export default function ProdutosPage() {
 						<TableEmpty colSpan={5}>Nenhum produto cadastrado.</TableEmpty>
 					) : (
 						items.map((p) => (
-							<TableRow
-								key={p.id}
-								onClick={() => router.push(`/produtos/${p.id}`)}
-								className="cursor-pointer"
-							>
+							<TableRow key={p.id} onClick={() => router.push(`/produtos/${p.id}`)} className="cursor-pointer" >
 								<TableCell className="font-medium">{p.name}</TableCell>
 								<TableCell className="text-muted-foreground">
 									{truncate(p.description)}

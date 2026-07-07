@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { PageHeader } from "@/components/shared/page-header";
 import { ProductForm } from "@/components/shared/product-form";
 import { AuthGuard } from "@/components/shared/auth-guard";
-import type { Product } from "@/lib/types";
+import type { ApiResponse, Product } from "@/lib/types";
 import { api, extractErrorMessage } from "@/lib/api";
 
 function AdminEditarProdutoContent({ id }: { id: number }) {
@@ -18,9 +18,8 @@ function AdminEditarProdutoContent({ id }: { id: number }) {
     (async () => {
       setLoading(true);
 		try {
-			const res = await api.get<Product>(`/products/${id}`)
-			//console.log("Res.data: ", res.data)
-			if (!cancelled) setProduct(res.data.data[0])
+			const response = await api.get<ApiResponse<Product>>(`/products/${id}`)
+			if (!cancelled) setProduct(response.data.data)
 		} catch (err) {
 			if (!cancelled) setError(extractErrorMessage(err, "Erro ao carregar produto"))
 		} finally {

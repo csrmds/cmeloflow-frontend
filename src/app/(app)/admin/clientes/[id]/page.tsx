@@ -8,7 +8,7 @@ import { ClientPhones } from "@/components/shared/client-phones";
 import { ClientWorkflows } from "@/components/shared/client-workflows";
 import { AuthGuard } from "@/components/shared/auth-guard";
 import { api, extractErrorMessage } from "@/lib/api";
-import type { Client } from "@/lib/types";
+import type { Client, ApiResponse } from "@/lib/types";
 
 function EditarClienteContent({ id }: { id: number }) {
 	const [client, setClient] = React.useState<Client | null>(null);
@@ -20,9 +20,9 @@ function EditarClienteContent({ id }: { id: number }) {
 		(async () => {
 			setLoading(true);
 			try {
-				const res = await api.get<Client>(`/clients/${id}`);
+				const res = await api.get<ApiResponse<Client>>(`/clients/${id}`);
 				console.log("GEt Cliente: ", res.data)
-				if (!cancelled) setClient(res.data);
+				if (!cancelled) setClient(res.data.data);
 			} catch (err) {
 				if (!cancelled) setError(extractErrorMessage(err, "Erro ao carregar."));
 			} finally {
