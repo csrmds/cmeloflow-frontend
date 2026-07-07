@@ -13,7 +13,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { api, extractErrorMessage } from "@/lib/api";
 import { useUserStore } from "@/lib/stores/user-store";
 import { ClientPhones } from "@/components/shared/client-phones";
-import type { Client } from "@/lib/types";
+import type { Client, ApiResponse } from "@/lib/types";
 
 const schema = z.object({
 	name: z.string().optional(),
@@ -44,14 +44,14 @@ export default function PerfilPage() {
 		(async () => {
 			setLoading(true);
 			try {
-				const res = await api.get<Client>(`/clients/${clientId}`);
+				const res = await api.get<ApiResponse<Client>>(`/clients/${clientId}`);
 				if (!cancelled) {
-					setClient(res.data);
+					setClient(res.data.data);
 					reset({
-						name: res.data.name ?? "",
-						email: res.data.email ?? "",
-						instagram_username: res.data.instagram_username ?? "",
-						about: res.data.about ?? "",
+						name: res.data.data.name ?? "",
+						email: res.data.data.email ?? "",
+						instagram_username: res.data.data.instagram_username ?? "",
+						about: res.data.data.about ?? "",
 					});
 				}
 			} catch (err) {

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/shared/page-header";
 import { LeadTable } from "@/components/shared/lead-table";
 import { AuthGuard } from "@/components/shared/auth-guard";
-import { ClientLeadView } from "@/lib/types"; 
+import { ClientLeadView, ApiResponse } from "@/lib/types"; 
 import { api } from "@/lib/api";
 //import { listLeads, type NormalizedLead } from "@/lib/services/leads";
 
@@ -19,10 +19,10 @@ function AdminLeadsContent() {
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const res = await api.get<ClientLeadView[]>("/leads");
-      console.log("res.data: ", res.data)
+      const res = await api.get<ApiResponse<ClientLeadView[]>>("/leads");
+      //console.log("res.data: ", res.data)
       if (!cancelled) {
-        setItems(res.data);
+        setItems(res.data.data);
         setLoading(false);
       }
     })();

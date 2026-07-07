@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import { AuthGuard } from "@/components/shared/auth-guard";
 import { api, extractErrorMessage } from "@/lib/api";
-import type { Product } from "@/lib/types";
+import type { Product, ApiResponse } from "@/lib/types";
 
 const currency = new Intl.NumberFormat("pt-BR", {
 	style: "currency",
@@ -37,7 +37,7 @@ function AdminProdutosContent() {
 		(async () => {
 			setLoading(true);
 			try {
-				const res = await api.get<Product[]>("/products");
+				const res = await api.get<ApiResponse<Product[]>>("/products");
 				//console.log("Res: ", res.data.data)
 				if (!cancelled) setItems(res.data.data);
 			} catch (err) {
