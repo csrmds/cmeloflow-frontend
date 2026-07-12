@@ -113,3 +113,51 @@ export interface ApiResponse<Type> {
   data: Type;
   error: string | null;
 }
+
+
+//Google Calendar Types
+export interface GoogleCalendarDateTime {
+	dateTime?: string; // ISO 8601 — presente em eventos com horário definido
+	date?: string;      // yyyy-mm-dd — presente em eventos de dia inteiro
+	timeZone?: string;
+}
+
+export interface GoogleCalendarAttendee {
+	email: string;
+	displayName?: string;
+	responseStatus?: "needsAction" | "declined" | "tentative" | "accepted";
+	organizer?: boolean;
+	self?: boolean;
+}
+
+export interface GoogleCalendarEvent {
+	id: string;
+	status?: "confirmed" | "tentative" | "cancelled";
+	htmlLink?: string;
+	summary: string;
+	description?: string | null;
+	location?: string | null;
+	start: GoogleCalendarDateTime;
+	end: GoogleCalendarDateTime;
+	attendees?: GoogleCalendarAttendee[];
+	created?: string;
+	updated?: string;
+}
+
+// Payload enviado pro backend ao criar/editar (start/end como string, não objeto)
+export interface GoogleCalendarEventInput {
+	summary: string;
+	description?: string;
+	start: string; // ISO 8601
+	end: string;   // ISO 8601
+	attendeeEmail?: string;
+	calendarId?: string;
+}
+
+export interface GoogleCalendar {
+	id: string;
+	summary: string;
+	primary: boolean;
+	accessRole: "owner" | "writer" | "reader" | "freeBusyReader";
+	backgroundColor?: string;
+}

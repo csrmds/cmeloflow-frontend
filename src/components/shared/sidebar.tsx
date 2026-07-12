@@ -13,6 +13,7 @@ import {
   Sparkles,
   User,
   Users,
+  Calendar,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUserStore } from "@/lib/stores/user-store";
@@ -40,6 +41,12 @@ const clientNav: NavItem[] = [
     icon: Sparkles,
     match: (p) => p.startsWith("/leads"),
   },
+  {
+    label: "Agenda",
+    href: "/agenda",
+    icon: Calendar,
+    match: (p) => p.startsWith("/agenda"),
+  },
   { label: "Meu Perfil", href: "/perfil", icon: User },
 ];
 
@@ -62,6 +69,12 @@ const adminNav: NavItem[] = [
     href: "/admin/produtos",
     icon: Package,
     match: (p) => p.startsWith("/admin/produtos"),
+  },
+  {
+    label: "Agenda",
+    href: "/agenda",
+    icon: Calendar,
+    match: (p) => p.startsWith("/agenda"),
   },
   {
     label: "Workflows",
