@@ -1,46 +1,53 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
 import { CalendarPlus } from "lucide-react"
+import { startOfMonth, endOfMonth } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/shared/page-header"
-import { api } from "@/lib/api"
-import { GoogleCalendarDateTime, GoogleCalendarEvent, GoogleCalendarEventInput, GoogleCalendar } from "@/lib/types"
+import { api, extractErrorMessage } from "@/lib/api"
+import { GoogleCalendarEvent, ApiResponse } from "@/lib/types"
 import { CalendarView } from "@/components/shared/calendar-view"
-import {
-	Dialog,
-	DialogContent,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
-import { ConfirmDialog } from "@/components/shared/confirm-dialog";
-
+import { EventFormDialog } from "@/components/shared/event-form-dialog"
 
 export default function AgendaPage() {
-	const [calendarEvent, setCalendarEvent] = React.useState<GoogleCalendarEvent[]>([])
-	const [open, setOpen] = React.useState(false);
+	const [rawEvents, setRawEvents] = React.useState<GoogleCalendarEvent[]>([])
+	const [loading, setLoading] = React.useState(true)
+	const [error, setError] = React.useState<string | null>(null)
+	const [open, setOpen] = React.useState(false)
 
-	const data= [
-		{
-			title: "titulo do agendamento",
-			start: "2026-07-13T09:00:00-03:00",
-			end: "2026-07-13T12:00:00-03:00"
+	const fetchEvents = React.useCallback(async () => {
+		setLoading(true)
+		setError(null)
+		try {
+			const now = new Date()
+			const timeMin = startOfMonth(now).toISOString()
+			const timeMax = endOfMonth(now).toISOString()
+			const res = await api.get<ApiResponse<GoogleCalendarEvent[]>>("/calendar/events", {
+				params: { timeMin, timeMax },
+			})
+			setRawEvents(res.data.data ?? [])
+		} catch (err) {
+			setError(extractErrorMessage(err, "Erro ao carregar agenda."))
+		} finally {
+			setLoading(false)
 		}
-	]
+	}, [])
 
-	const events= data.map((e) => ({
-		title: e.title,
-		start: new Date(e.start),
-		end: new Date(e.end)
+	React.useEffect(() => {
+		fetchEvents()
+	}, [fetchEvents])
+
+	const events = rawEvents.map((e) => ({
+		title: e.summary,
+		start: new Date(e.start.dateTime ?? e.start.date ?? ""),
+		end: new Date(e.end.dateTime ?? e.end.date ?? ""),
 	}))
-
 
 	return (
 		<div>
-			<PageHeader 
-				title="Agenda" 
+			<PageHeader
+				title="Agenda"
 				description="Acompanhe os próximos agendamentos"
 				actions={
 					<Button onClick={() => setOpen(true)}>
@@ -49,24 +56,15 @@ export default function AgendaPage() {
 					</Button>
 				}
 			/>
-			
-			<CalendarView events={events} ></CalendarView>
 
-			<Dialog open={open} onOpenChange={setOpen}>
-				
-				
-				<DialogContent>
-					<DialogHeader>
-						<DialogTitle>Titulo caixa diaglogo</DialogTitle>
-					</DialogHeader>
-					<p>algum conteudo</p>
-					<DialogFooter>Rodapé</DialogFooter>
-				</DialogContent>
-				
-			</Dialog>
+			{error && <p className="mb-4 text-sm text-destructive">{error}</p>}
+			{loading ? (
+				<p className="text-sm text-muted-foreground">Carregando…</p>
+			) : (
+				<CalendarView events={events} />
+			)}
+
+			<EventFormDialog open={open} onOpenChange={setOpen} onSaved={fetchEvents} />
 		</div>
 	)
-
 }
-
-

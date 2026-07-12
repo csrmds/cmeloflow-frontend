@@ -13,6 +13,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { api, extractErrorMessage } from "@/lib/api";
 import { useUserStore } from "@/lib/stores/user-store";
 import { ClientPhones } from "@/components/shared/client-phones";
+import { ClientCalendarConnect } from "@/components/shared/client-calendar-connect";
 import type { Client, ApiResponse } from "@/lib/types";
 
 const schema = z.object({
@@ -127,6 +128,7 @@ export default function PerfilPage() {
 					</form>
 					
 					{client && <ClientPhones clientId={client.id} />}
+					{client && <ClientCalendarConnect />}
 				</>
 			)}
 		</div>

@@ -17,3 +17,13 @@ export function formatDate(value: string | null) {
 		return value;
 	}
 }
+
+export function toLocalISOString(date: string, time: string) {
+	const d = new Date(`${date}T${time}:00`);
+	const offsetMin = -d.getTimezoneOffset();
+	const sign = offsetMin >= 0 ? "+" : "-";
+	const abs = Math.abs(offsetMin);
+	const hh = String(Math.floor(abs / 60)).padStart(2, "0");
+	const mm = String(abs % 60).padStart(2, "0");
+	return `${date}T${time}:00${sign}${hh}:${mm}`;
+}
