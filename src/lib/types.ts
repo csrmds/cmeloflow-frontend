@@ -140,6 +140,7 @@ export interface GoogleCalendarEvent {
 	start: GoogleCalendarDateTime;
 	end: GoogleCalendarDateTime;
 	attendees?: GoogleCalendarAttendee[];
+	organizer?: GoogleCalendarOrganizer;
 	created?: string;
 	updated?: string;
 }
@@ -160,4 +161,10 @@ export interface GoogleCalendar {
 	primary: boolean;
 	accessRole: "owner" | "writer" | "reader" | "freeBusyReader";
 	backgroundColor?: string;
+}
+
+export interface GoogleCalendarOrganizer {
+	email?: string;
+	displayName?: string;
+	self?: boolean;
 }

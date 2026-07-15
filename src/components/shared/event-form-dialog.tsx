@@ -4,6 +4,7 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { format as formatDate } from "date-fns";
 import { Loader as Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { api, extractErrorMessage } from "@/lib/api";
 import { toLocalISOString } from "@/lib/utils";
+import type { GoogleCalendarEvent } from "@/lib/types";
 
 const schema = z
 	.object({
@@ -39,55 +41,71 @@ interface EventFormDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	onSaved: () => Promise<void> | void;
+	calendarId?: string;
+	event?: GoogleCalendarEvent | null;
 }
 
-export function EventFormDialog({ open, onOpenChange, onSaved }: EventFormDialogProps) {
+function toDateInput(dt?: string) {
+	if (!dt) return "";
+	return formatDate(new Date(dt), "yyyy-MM-dd");
+}
+
+function toTimeInput(dt?: string) {
+	if (!dt) return "";
+	return formatDate(new Date(dt), "HH:mm");
+}
+
+export function EventFormDialog({
+	open,
+	onOpenChange,
+	onSaved,
+	calendarId,
+	event,
+}: EventFormDialogProps) {
+	const isEdit = Boolean(event);
 	const [serverError, setServerError] = React.useState<string | null>(null);
 	const {
 		register,
 		handleSubmit,
 		reset,
 		formState: { errors, isSubmitting },
-	} = useForm<FormValues>({
-		resolver: zodResolver(schema),
-		defaultValues: {
-			summary: "",
-			date: "",
-			start_time: "",
-			end_time: "",
-			description: "",
-			attendeeEmail: "",
-		},
-	});
+	} = useForm<FormValues>({ resolver: zodResolver(schema) });
 
 	React.useEffect(() => {
 		if (!open) return;
-		reset({
-			summary: "",
-			date: "",
-			start_time: "",
-			end_time: "",
-			description: "",
-			attendeeEmail: "",
-		});
 		setServerError(null);
-	}, [open, reset]);
+		reset({
+			summary: event?.summary ?? "",
+			date: toDateInput(event?.start.dateTime),
+			start_time: toTimeInput(event?.start.dateTime),
+			end_time: toTimeInput(event?.end.dateTime),
+			description: event?.description ?? "",
+			attendeeEmail: event?.attendees?.[0]?.email ?? "",
+		});
+	}, [open, event, reset]);
 
 	const onSubmit = async (values: FormValues) => {
 		setServerError(null);
 		const payload = {
 			summary: values.summary,
-			description: values.description || undefined,
+			description: values.description || "",
 			start: toLocalISOString(values.date, values.start_time),
 			end: toLocalISOString(values.date, values.end_time),
-			attendeeEmail: values.attendeeEmail || undefined,
+			attendeeEmail: values.attendeeEmail || "",
+			calendarId: calendarId || undefined,
 		};
 		try {
-			await api.post("/calendar/events", payload);
+			if (isEdit && event) {
+				await api.put(`/calendar/events/${event.id}`, payload);
+			} else {
+				await api.post("/calendar/events", payload);
+			}
 			onOpenChange(false);
 			await onSaved();
 		} catch (err) {
-			setServerError(extractErrorMessage(err, "Falha ao criar evento."));
+			setServerError(
+				extractErrorMessage(err, isEdit ? "Falha ao atualizar evento." : "Falha ao criar evento.")
+			);
 		}
 	};
 
@@ -95,7 +113,7 @@ export function EventFormDialog({ open, onOpenChange, onSaved }: EventFormDialog
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Novo Evento</DialogTitle>
+					<DialogTitle>{isEdit ? "Editar Evento" : "Novo Evento"}</DialogTitle>
 				</DialogHeader>
 
 				<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -110,9 +128,7 @@ export function EventFormDialog({ open, onOpenChange, onSaved }: EventFormDialog
 					<div className="space-y-1.5">
 						<Label htmlFor="date">Data</Label>
 						<Input id="date" type="date" {...register("date")} />
-						{errors.date && (
-							<p className="text-xs text-destructive">{errors.date.message}</p>
-						)}
+						{errors.date && <p className="text-xs text-destructive">{errors.date.message}</p>}
 					</div>
 
 					<div className="grid grid-cols-2 gap-4">

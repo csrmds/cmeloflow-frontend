@@ -1,0 +1,149 @@
+/* Overrides do react-big-calendar para combinar com o tema dark do app.
+   Usa as mesmas CSS variables definidas em src/app/globals.css */
+
+.dark .rbc-calendar {
+	color: var(--foreground);
+}
+
+/* Toolbar */
+.dark .rbc-toolbar-label {
+	color: var(--foreground);
+}
+
+.dark .rbc-toolbar button {
+	color: var(--foreground);
+	background: var(--background);
+	border: 1px solid var(--border);
+}
+
+.dark .rbc-toolbar button:hover {
+	background: var(--muted);
+	border-color: var(--border);
+	color: var(--foreground);
+}
+
+.dark .rbc-toolbar button:active,
+.dark .rbc-toolbar button.rbc-active {
+	background: var(--primary);
+	color: var(--primary-foreground);
+	border-color: var(--primary);
+	box-shadow: none;
+}
+
+.dark .rbc-toolbar button:active:hover,
+.dark .rbc-toolbar button:active:focus,
+.dark .rbc-toolbar button.rbc-active:hover,
+.dark .rbc-toolbar button.rbc-active:focus {
+	background: var(--primary);
+	color: var(--primary-foreground);
+	border-color: var(--primary);
+	opacity: 0.9;
+}
+
+.dark .rbc-toolbar button:focus {
+	background: var(--muted);
+	color: var(--foreground);
+	border-color: var(--ring);
+}
+
+/* Bordas gerais da grade */
+.dark .rbc-month-view,
+.dark .rbc-time-view,
+.dark .rbc-agenda-view table.rbc-agenda-table {
+	border: 1px solid var(--border);
+}
+
+.dark .rbc-month-row + .rbc-month-row,
+.dark .rbc-day-bg + .rbc-day-bg,
+.dark .rbc-header + .rbc-header,
+.dark .rbc-time-header.rbc-overflowing,
+.dark .rbc-time-header > .rbc-row:first-child,
+.dark .rbc-time-content,
+.dark .rbc-time-content > * + * > *,
+.dark .rbc-time-header-content,
+.dark .rbc-day-slot .rbc-time-slot,
+.dark .rbc-header,
+.dark .rbc-agenda-view table.rbc-agenda-table tbody > tr > td,
+.dark .rbc-agenda-view table.rbc-agenda-table thead > tr > th {
+	border-color: var(--border);
+}
+
+.dark .rbc-header {
+	background: var(--card);
+	color: var(--foreground);
+}
+
+/* Dias fora do mês */
+.dark .rbc-off-range {
+	color: var(--muted-foreground);
+}
+
+.dark .rbc-off-range-bg {
+	background: var(--muted);
+}
+
+/* Dia de hoje */
+.dark .rbc-today {
+	background: var(--accent);
+}
+
+/* Eventos */
+.dark .rbc-event {
+	background-color: var(--primary);
+	color: var(--primary-foreground);
+}
+
+.dark .rbc-event.rbc-selected {
+	background-color: var(--primary);
+	opacity: 0.85;
+}
+
+.dark .rbc-event:focus {
+	outline: 2px solid var(--ring);
+}
+
+.dark .rbc-show-more {
+	background: transparent;
+	color: var(--primary);
+}
+
+.dark .rbc-show-more:hover,
+.dark .rbc-show-more:focus {
+	color: var(--foreground);
+}
+
+/* Overlay ("+X mais" popup) */
+.dark .rbc-overlay {
+	background: var(--popover);
+	border: 1px solid var(--border);
+	color: var(--popover-foreground);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.dark .rbc-overlay-header {
+	border-bottom: 1px solid var(--border);
+	color: var(--foreground);
+}
+
+/* Seleção de slot (arrastar para criar evento) */
+.dark .rbc-slot-selection {
+	background: var(--primary);
+	opacity: 0.5;
+	color: var(--primary-foreground);
+}
+
+.dark .rbc-selected-cell {
+	background: var(--muted);
+}
+
+/* Indicador de hora atual (view semana/dia) */
+.dark .rbc-current-time-indicator {
+	background-color: var(--destructive);
+}
+
+/* Gutter de horários e cabeçalho fixo em views com recursos */
+.dark .rbc-time-view-resources .rbc-time-gutter,
+.dark .rbc-time-view-resources .rbc-time-header-gutter {
+	background: var(--card);
+	border-right: 1px solid var(--border);
+}
