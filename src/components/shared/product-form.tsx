@@ -25,15 +25,15 @@ import type { Product } from "@/lib/types";
 const schema = z.object({
 	name: z.string().min(1, "Nome obrigatório"),
 	description: z.string().optional(),
-	price: z
-		.string()
-		.min(1, "Preço obrigatório")
+	price: z.string().min(1, "Preço obrigatório")
 		.refine((v) => !Number.isNaN(Number(v)) && Number(v) >= 0, {
 			message: "Preço inválido",
 		}),
 	type: z.enum(["produto", "servico"]),
 	active: z.boolean(),
 	keywords: z.string().optional(),
+	requires_scheduling: z.boolean().optional(),
+	duration_minutes: z.string().optional()
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -67,6 +67,8 @@ export function ProductForm({
 			type: ((product?.type as "produto" | "servico") ?? "produto"),
 			active: product ? Boolean(Number(product.active)) : true,
 			keywords: product?.keywords ?? "",
+			requires_scheduling: product?.requires_scheduling != null ? Boolean(Number(product.requires_scheduling)) : false,
+			duration_minutes: product?.duration_minutes != null ? String(product.duration_minutes) : ""
 		},
 	});
 
@@ -79,7 +81,12 @@ export function ProductForm({
 
 	const onSubmit = async (values: FormValues) => {
 		setServerError(null);
-		const payload = { ...values, price: Number(values.price)};
+		const payload = { 
+			...values, 
+			price: Number(values.price),
+			requires_scheduling: Number(values.requires_scheduling),
+			duration_minutes: Number(values.duration_minutes)
+		};
 		try {
 			if (isEdit && product) {
 				await api.put(`/products/${product.id}`, payload);
@@ -143,6 +150,14 @@ export function ProductForm({
 								<SelectItem value="servico">Serviço</SelectItem>
 							</SelectContent>
 						</Select>
+					</div>
+
+					<div className="space-y-1.5">
+						<Label htmlFor="duration_minutes">Duração (minutos)</Label>
+						<Input id="duration_minutes" type="number" placeholder="Ex: 30" {...register("duration_minutes")} />
+						<p className="text-xs text-muted-foreground">
+							Preencha se este serviço exige agendamento (ex: 15, 30, 60).
+						</p>
 					</div>
 
 					<div className="space-y-1.5 sm:col-span-2">

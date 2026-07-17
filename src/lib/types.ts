@@ -79,6 +79,8 @@ export interface Product {
 	description: string | null;
 	price: number | string | null;
 	type: ProductType | string | null;
+	requires_scheduling: number | null;
+	duration_minutes: number | null;
 	active: number | boolean;
 	keywords: string | null;
 	created_at: string | null;
