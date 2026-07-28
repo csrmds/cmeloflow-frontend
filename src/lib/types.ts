@@ -170,3 +170,11 @@ export interface GoogleCalendarOrganizer {
 	displayName?: string;
 	self?: boolean;
 }
+
+export interface CalendarStatus {
+	connected: boolean;
+	status: "not_connected" | "connected" | "error";
+	email: string | null;
+	error_message?: string;
+	default_calendar_id?: string;
+}

@@ -18,12 +18,14 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { api, extractErrorMessage } from "@/lib/api";
-import type { ApiResponse, GoogleCalendar } from "@/lib/types";
+import type { ApiResponse, GoogleCalendar, CalendarStatus } from "@/lib/types";
+
 
 function ClientCalendarConnectInner() {
 	const router = useRouter();
 	const params = useSearchParams();
 
+	const [status, setStatus] = React.useState<CalendarStatus | null>(null);
 	const [calendars, setCalendars] = React.useState<GoogleCalendar[] | null>(null);
 	const [connected, setConnected] = React.useState(false);
 	const [loading, setLoading] = React.useState(true);
@@ -36,16 +38,20 @@ function ClientCalendarConnectInner() {
 	const refresh = React.useCallback(async () => {
 		setLoading(true);
 		try {
-			const res = await api.get<ApiResponse<GoogleCalendar[]>>("/calendar/calendars");
-			const data = res.data.data ?? [];
-			setCalendars(data);
-			setConnected(true);
-			const primary = data.find((c) => c.primary);
-			if (primary) setSelectedCalendar(primary.id);
+			const statusRes = await api.get<ApiResponse<CalendarStatus>>("/calendar/status");
+			setStatus(statusRes.data.data);
+
+			if (statusRes.data.data.status === "connected") {
+				const calRes = await api.get<ApiResponse<GoogleCalendar[]>>("/calendar/calendars");
+				const data = calRes.data.data ?? [];
+				setCalendars(data);
+				const primary = data.find((c) => c.primary);
+				if (primary) setSelectedCalendar(primary.id);
+			} else {
+				setCalendars(null);
+			}
 		} catch {
-			// 404 = cliente ainda não conectou a agenda
-			setConnected(false);
-			setCalendars(null);
+			setStatus({ connected: false, status: "error", email: null, error_message: "Falha ao consultar status." });
 		} finally {
 			setLoading(false);
 		}
@@ -100,22 +106,32 @@ function ClientCalendarConnectInner() {
 						Conecte sua conta Google para permitir agendamentos automáticos.
 					</p>
 				</div>
-				{!loading &&
-					(connected ? (
+				{!loading && status && (
+					status.status === "connected" ? (
 						<span className="flex items-center gap-1.5 rounded-md bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
 							<CheckCircle2 className="h-3.5 w-3.5" />
-							Conectado
+							Conectado {status.email && `(${status.email})`}
+						</span>
+					) : status.status === "error" ? (
+						<span className="flex items-center gap-1.5 rounded-md bg-destructive/10 px-2.5 py-1 text-xs font-medium text-destructive">
+							<XCircle className="h-3.5 w-3.5" />
+							Erro na conexão
 						</span>
 					) : (
 						<span className="flex items-center gap-1.5 rounded-md bg-muted px-2.5 py-1 text-xs text-muted-foreground">
 							<XCircle className="h-3.5 w-3.5" />
 							Não conectado
 						</span>
-					))}
+					)
+				)}
 			</div>
 
-			{notice && (
-				<p className="mb-3 text-sm text-emerald-600 dark:text-emerald-400">{notice}</p>
+			{notice && ( <p className="mb-3 text-sm text-emerald-600 dark:text-emerald-400">{notice}</p> )}
+			{status?.status === "error" && (
+				<div className="mb-3 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+					<p>{status.error_message}</p>
+					{status.email && <p className="mt-1 text-xs opacity-80">Conta anterior: {status.email}</p>}
+				</div>
 			)}
 			{error && <p className="mb-3 text-sm text-destructive">{error}</p>}
 
