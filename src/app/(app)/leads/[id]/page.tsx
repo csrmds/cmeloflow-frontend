@@ -21,6 +21,7 @@ export default function EditarLeadPage() {
 			setLoading(true);
 			const res = await api.get<ApiResponse<Lead | null>>(`/leads/${id}`);
 			if (!cancelled) {
+				console.log("res.data: ", res.data.data)
 				setLead(res.data.data);
 				setLoading(false);
 			}

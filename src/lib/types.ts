@@ -42,8 +42,7 @@ export interface Lead {
 	instagram_username: string | null;
 	name: string | null;
 	whatsapp_number: string | null;
-	first_message: string | null;
-	last_message: string | null;
+	email: string | null;
 	source: string | null;
 	status: string | null;
 	human_handover: number;
@@ -63,6 +62,7 @@ export interface ClientLeadView {
 	lead_instagram_scoped_userid: string | null;
 	lead_instagram_username: string | null;
 	lead_whatsapp_number: string | null;
+	lead_email: string | null;
 	lead_status: string | null;
 	lead_source: string | null;
 	lead_human_handover: string | number | null;

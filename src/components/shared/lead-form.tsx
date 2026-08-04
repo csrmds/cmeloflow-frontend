@@ -25,13 +25,12 @@ import { Lead } from "@/lib/types";
 const schema = z.object({
 	name: z.string().optional(),
 	whatsapp_number: z.string().optional(),
+	email: z.string().optional(),
 	instagram_username: z.string().optional(),
 	instagram_scoped_userid: z.string().optional(),
 	source: z.enum(["whatsapp", "instagram", "comment", "manual"]),
 	status: z.enum(["novo", "em_atendimento", "fechado"]),
 	human_handover: z.boolean(),
-	first_message: z.string().optional(),
-	last_message: z.string().optional(),
 	notes: z.string().optional(),
 	client_id: z.string().optional(),
 });
@@ -65,13 +64,12 @@ export function LeadForm({
 		defaultValues: {
 			name: lead?.name ?? "",
 			whatsapp_number: lead?.whatsapp_number ?? "",
+			email: lead?.email ?? "",
 			instagram_username: lead?.instagram_username ?? "",
 			instagram_scoped_userid: lead?.instagram_scoped_userid ?? "",
 			source: ((lead?.source as "whatsapp" | "instagram" | "comment" | "manual") ?? "manual"),
 			status: ((lead?.status as "novo" | "em_atendimento" | "fechado") ?? "novo"),
 			human_handover: Number(lead?.human_handover) === 1,
-			first_message: lead?.first_message ?? "",
-			last_message: lead?.last_message ?? "",
 			notes: lead?.notes ?? "",
 			client_id: lead?.client_id != null ? String(lead.client_id) : "",
 		},
@@ -140,6 +138,11 @@ export function LeadForm({
 					<div className="space-y-1.5">
 						<Label htmlFor="whatsapp_number">WhatsApp</Label>
 						<Input id="whatsapp_number" {...register("whatsapp_number")} />
+					</div>
+
+					<div className="space-y-1.5">
+						<Label htmlFor="email">Email</Label>
+						<Input id="email" {...register("email")} />
 					</div>
 
 					<div className="space-y-1.5">
