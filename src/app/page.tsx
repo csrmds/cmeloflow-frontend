@@ -12,6 +12,20 @@ import {
 import { Button } from "@/components/ui/button";
 
 export default function LandingPage() {
+
+	const company = {
+		tradeName: "MELOS TECH",
+		legalName: "C MELO DESENVOLVIMENTO DE PROGRAMAS LTDA",
+		cnpj: "69.575.998/0001-59",
+		address: "RUA DOS ROUXINÓIS, 409, APTO 503",
+		city: "SERRA",
+		state: "ES",
+		zip: "29166650",
+		phone: "(27) 99971-7242",
+		phoneRaw: "+5527999717242",
+		email: "cmelosdesenvolvimento@gmail.com",
+	}
+
 	return (
 		<div className="min-h-screen bg-background text-foreground">
 			<header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
@@ -174,8 +188,39 @@ export default function LandingPage() {
 				</section>
 			</main>
 
-			<footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
-				© {new Date().getFullYear()} CMeloFlow. Todos os direitos reservados.
+			<footer className="border-t border-border py-10 text-sm text-muted-foreground">
+				<div className="mx-auto grid max-w-6xl gap-6 px-6 sm:grid-cols-2">
+					<div className="space-y-1">
+						<p className="font-semibold text-foreground">{company.tradeName}</p>
+						<p>{company.legalName}</p>
+						<p>CNPJ: {company.cnpj}</p>
+						<p>
+							{company.address}, {company.city} - {company.state}, CEP {company.zip}
+						</p>
+					</div>
+					<div className="space-y-1 sm:text-right">
+						<p>{'\u00A0'}</p>
+						<p>
+							Tel/WhatsApp:{" "}
+							<a href={`tel:${company.phoneRaw}`} className="hover:text-foreground">
+								{company.phone}
+							</a>
+						</p>
+						<p>
+							E-mail:{" "}
+							<a href={`mailto:${company.email}`} className="hover:text-foreground">
+								{company.email}
+							</a>
+						</p>
+						<p className="space-x-3 pt-1">
+							<Link href="/privacidade" className="hover:text-foreground">Política de Privacidade</Link>
+							<Link href="/termos" className="hover:text-foreground">Termos de Uso</Link>
+						</p>
+					</div>
+				</div>
+				<p className="mx-auto mt-6 max-w-6xl px-6 text-center">
+					© {new Date().getFullYear()} {company.tradeName}. Todos os direitos reservados.
+				</p>
 			</footer>
 		</div>
 	);

@@ -6,7 +6,6 @@ import { PageHeader } from "@/components/shared/page-header";
 import { LeadForm } from "@/components/shared/lead-form";
 import { Lead, ApiResponse } from "@/lib/types";
 import { api } from "@/lib/api";
-//import { getLead, type NormalizedLead } from "@/lib/services/leads";
 
 export default function EditarLeadPage() {
 	const params = useParams<{ id: string }>();
