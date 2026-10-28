@@ -47,10 +47,7 @@ export default function PrivacidadePage() {
 		<div className="min-h-screen bg-background text-foreground">
 			<header className="border-b border-border bg-background/80 backdrop-blur">
 				<div className="mx-auto flex h-16 max-w-3xl items-center px-6">
-					<Link
-						href="/"
-						className="flex items-center gap-2 font-semibold tracking-tight"
-					>
+					<Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
 						<div className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-foreground">
 							<PanelsTopLeft className="h-4 w-4" />
 						</div>

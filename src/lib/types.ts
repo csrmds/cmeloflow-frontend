@@ -178,3 +178,23 @@ export interface CalendarStatus {
 	error_message?: string;
 	default_calendar_id?: string;
 }
+
+
+export interface ChatConversation {
+	lead_id: number;
+	name: string | null;
+	whatsapp_number: string | null;
+	human_handover: string | number | null;
+	last_body: string | null;
+	last_direction: "in" | "out" | null;
+	last_at: string | null;
+}
+
+export interface ChatMessage {
+	id: number;
+	direction: "in" | "out";
+	sender: "lead" | "client" | "ai";
+	body: string;
+	status: string;
+	created_at: string | null;
+}

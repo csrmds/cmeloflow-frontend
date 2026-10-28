@@ -14,6 +14,7 @@ import {
   User,
   Users,
   Calendar,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUserStore } from "@/lib/stores/user-store";
@@ -41,6 +42,7 @@ const clientNav: NavItem[] = [
     icon: Sparkles,
     match: (p) => p.startsWith("/leads"),
   },
+  { label: "Conversas", href: "/conversas", icon: MessageSquare, match: (p) => p.startsWith("/conversas") },
   {
     label: "Agenda",
     href: "/agenda",
@@ -51,37 +53,43 @@ const clientNav: NavItem[] = [
 ];
 
 const adminNav: NavItem[] = [
-  { label: "Home", href: "/dashboard", icon: Home },
-  {
-    label: "Clientes",
-    href: "/admin/clientes",
-    icon: Users,
-    match: (p) => p.startsWith("/admin/clientes"),
-  },
-  {
-    label: "Leads",
-    href: "/admin/leads",
-    icon: Sparkles,
-    match: (p) => p.startsWith("/admin/leads"),
-  },
-  {
-    label: "Produtos",
-    href: "/admin/produtos",
-    icon: Package,
-    match: (p) => p.startsWith("/admin/produtos"),
-  },
-  {
-    label: "Agenda",
-    href: "/agenda",
-    icon: Calendar,
-    match: (p) => p.startsWith("/agenda"),
-  },
-  {
-    label: "Workflows",
-    href: "/admin/workflow",
-    icon: Workflow,
-    match: (p) => p.startsWith("/admin/workflow"),
-  },
+	{ label: "Home", href: "/dashboard", icon: Home },
+	{
+		label: "Clientes",
+		href: "/admin/clientes",
+		icon: Users,
+		match: (p) => p.startsWith("/admin/clientes"),
+	},
+	{
+		label: "Leads",
+		href: "/admin/leads",
+		icon: Sparkles,
+		match: (p) => p.startsWith("/admin/leads"),
+	},
+	{
+		label: "Produtos",
+		href: "/admin/produtos",
+		icon: Package,
+		match: (p) => p.startsWith("/admin/produtos"),
+	},
+	{ 
+		label: "Conversas", 
+		href: "/conversas", 
+		icon: MessageSquare, 
+		match: (p) => p.startsWith("/conversas") 
+	},
+	{
+		label: "Agenda",
+		href: "/agenda",
+		icon: Calendar,
+		match: (p) => p.startsWith("/agenda"),
+	},
+	{
+		label: "Workflows",
+		href: "/admin/workflow",
+		icon: Workflow,
+		match: (p) => p.startsWith("/admin/workflow"),
+	},
 ];
 
 export function Sidebar() {
