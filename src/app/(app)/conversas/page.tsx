@@ -17,6 +17,19 @@ function timeLabel(value: string | null) {
 	return new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit" }).format(new Date(value));
 }
 
+const STATUS_LABEL: Record<string, string> = {
+	sent: "enviada",
+	delivered: "entregue",
+	read: "lida",
+};
+
+function failureReason(m: ChatMessage) {
+	if (m.error_code === 131047) {
+		return "passaram mais de 24h desde a última mensagem do lead. Só é possível enviar um template aprovado.";
+	}
+	return m.error_message || "falha no envio pelo WhatsApp.";
+}
+
 export default function ConversasPage() {
 	const [leads, setLeads] = React.useState<ClientLeadView[]>([])
 	const [conversations, setConversations] = React.useState<ChatConversation[]>([]);
@@ -73,22 +86,18 @@ export default function ConversasPage() {
 	React.useEffect(() => {
 		if (!leadId) return;
 		let cancelled = false;
-		let lastId = 0;
 		setMessages([]);
 
+		// Busca a conversa inteira a cada ciclo: assim os status (entregue/lida/falhou)
+		// atualizados pelo webhook também aparecem.
 		const fetchNew = async () => {
 			try {
 				const res = await api.get<ApiResponse<ChatMessage[]>>(
-					`/chat/conversations/${leadId}/messages`,
-					{ params: { after: lastId } }
+					`/chat/conversations/${leadId}/messages`
 				);
-				const fresh = res.data.data ?? [];
-				if (cancelled || fresh.length === 0) return;
-				lastId = fresh[fresh.length - 1].id;
-				setMessages((prev) => {
-					const known = new Set(prev.map((m) => m.id));
-					return [...prev, ...fresh.filter((m) => !known.has(m.id))];
-				});
+				if (cancelled) return;
+				const all = res.data.data ?? [];
+				setMessages((prev) => (JSON.stringify(prev) === JSON.stringify(all) ? prev : all));
 			} catch (err) {
 				if (!cancelled) setError(extractErrorMessage(err, "Erro ao carregar mensagens."));
 			}
@@ -141,44 +150,44 @@ export default function ConversasPage() {
 						<Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Pesquisar lead por nome" className="pl-8" />
 					</div>
 					<div className="relative p-3">
-						<Button onClick={()=> leadList() }>Teste</Button>
+						<Button onClick={() => leadList()}>Teste</Button>
 					</div>
 					<div className="flex-1 overflow-y-auto">
-					{loading ? (
-						<p className="p-4 text-sm text-muted-foreground">Carregando…</p>
-					) : filtered.length === 0 ? (
-						<p className="p-4 text-sm text-muted-foreground">
-							{conversations.length === 0 ? "Nenhum lead cadastrado." : "Nenhum lead encontrado."}
-						</p>
-					) : (
-						filtered.map((c) => (
-							<button
-								key={c.lead_id}
-								type="button"
-								onClick={() => setSelected(c)}
-								className={cn(
-									"flex w-full flex-col gap-0.5 border-b border-border px-4 py-3 text-left transition-colors hover:bg-muted/50",
-									selected?.lead_id === c.lead_id && "bg-muted"
-								)}
-							>
-								<div className="flex items-center justify-between gap-2">
-									<span className="truncate text-sm font-medium">
-										{c.name || c.whatsapp_number}
+						{loading ? (
+							<p className="p-4 text-sm text-muted-foreground">Carregando…</p>
+						) : filtered.length === 0 ? (
+							<p className="p-4 text-sm text-muted-foreground">
+								{conversations.length === 0 ? "Nenhum lead cadastrado." : "Nenhum lead encontrado."}
+							</p>
+						) : (
+							filtered.map((c) => (
+								<button
+									key={c.lead_id}
+									type="button"
+									onClick={() => setSelected(c)}
+									className={cn(
+										"flex w-full flex-col gap-0.5 border-b border-border px-4 py-3 text-left transition-colors hover:bg-muted/50",
+										selected?.lead_id === c.lead_id && "bg-muted"
+									)}
+								>
+									<div className="flex items-center justify-between gap-2">
+										<span className="truncate text-sm font-medium">
+											{c.name || c.whatsapp_number}
+										</span>
+										<span className="shrink-0 text-xs text-muted-foreground">
+											{timeLabel(c.last_at)}
+										</span>
+									</div>
+									<span className="truncate text-xs text-muted-foreground">
+										{c.last_body
+											? `${c.last_direction === "out" ? "Você: " : ""}${c.last_body}`
+											: c.whatsapp_number
+												? "Iniciar conversa"
+												: "Sem WhatsApp"}
 									</span>
-									<span className="shrink-0 text-xs text-muted-foreground">
-										{timeLabel(c.last_at)}
-									</span>
-								</div>
-								<span className="truncate text-xs text-muted-foreground">
-									{c.last_body
-										? `${c.last_direction === "out" ? "Você: " : ""}${c.last_body}`
-										: c.whatsapp_number
-											? "Iniciar conversa"
-											: "Sem WhatsApp"}
-								</span>
-							</button>
-						))
-					)}
+								</button>
+							))
+						)}
 					</div>
 				</aside>
 
@@ -216,14 +225,26 @@ export default function ConversasPage() {
 										<div
 											className={cn(
 												"max-w-[70%] whitespace-pre-wrap rounded-lg px-3 py-2 text-sm shadow-sm",
-												m.direction === "out" ? "bg-primary text-primary-foreground" : "bg-card"
+												m.status === "failed"
+													? "border border-destructive bg-destructive/10 text-foreground"
+													: m.direction === "out"
+														? "bg-primary text-primary-foreground"
+														: "bg-card"
 											)}
 										>
 											{m.body}
 											<div className="mt-1 text-right text-[10px] opacity-70">
 												{m.sender === "ai" ? "IA · " : ""}
 												{timeLabel(m.created_at)}
+												{m.direction === "out" && m.status !== "failed" && (
+													<> · {STATUS_LABEL[m.status] ?? m.status}</>
+												)}
 											</div>
+											{m.status === "failed" && (
+												<p className="mt-1 text-[11px] font-medium text-destructive">
+													Não enviada: {failureReason(m)}
+												</p>
+											)}
 										</div>
 									</div>
 								))}

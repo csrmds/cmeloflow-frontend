@@ -196,5 +196,7 @@ export interface ChatMessage {
 	sender: "lead" | "client" | "ai";
 	body: string;
 	status: string;
+	error_code?: number | null;
+	error_message?: string | null;
 	created_at: string | null;
 }
