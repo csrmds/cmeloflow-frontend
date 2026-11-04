@@ -200,3 +200,15 @@ export interface ChatMessage {
 	error_message?: string | null;
 	created_at: string | null;
 }
+
+export interface MessageTemplate {
+	id: string;
+	name: string;
+	status: "APPROVED" | "PENDING" | "REJECTED" | "PAUSED" | "DISABLED" | string;
+	category: "UTILITY" | "MARKETING" | "AUTHENTICATION" | string;
+	language: string;
+	body: string;
+	footer: string | null;
+	variables: number;
+	rejected_reason: string | null;
+}

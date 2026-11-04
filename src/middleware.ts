@@ -9,6 +9,7 @@ const PROTECTED_PREFIXES = [
 	"/admin",
 	"/agenda",
 	"/conversas",
+	"/modelos",
 ];
 
 const TOKEN_COOKIE = "cmeloflow_token";
@@ -41,5 +42,6 @@ export const config = {
 		"/admin/:path*",
 		"/agenda/:path*",
 		"/conversas/:path*",
+		"/modelos/:path*",
 	],
 };

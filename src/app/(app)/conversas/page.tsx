@@ -2,13 +2,20 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Send, Loader as Loader2, MessageSquare, Search } from "lucide-react";
+import { Send, Loader as Loader2, MessageSquare, Search, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { PageHeader } from "@/components/shared/page-header";
 import { api, extractErrorMessage } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import type { ApiResponse, ChatConversation, ChatMessage, ClientLeadView } from "@/lib/types";
+import type { ApiResponse, ChatConversation, ChatMessage, ClientLeadView, MessageTemplate } from "@/lib/types";
 
 const POLL_MS = 10000;
 
@@ -25,13 +32,13 @@ const STATUS_LABEL: Record<string, string> = {
 
 function failureReason(m: ChatMessage) {
 	if (m.error_code === 131047) {
-		return "passaram mais de 24h desde a última mensagem do lead. Só é possível enviar um template aprovado.";
+		return "passaram mais de 24h desde a última mensagem do lead. Use o botão Modelo para enviar um modelo aprovado.";
 	}
 	return m.error_message || "falha no envio pelo WhatsApp.";
 }
 
 export default function ConversasPage() {
-	const [leads, setLeads] = React.useState<ClientLeadView[]>([])
+	// const [leads, setLeads] = React.useState<ClientLeadView[]>([])
 	const [conversations, setConversations] = React.useState<ChatConversation[]>([]);
 	const [selected, setSelected] = React.useState<ChatConversation | null>(null);
 	const [messages, setMessages] = React.useState<ChatMessage[]>([]);
@@ -40,6 +47,11 @@ export default function ConversasPage() {
 	const [loading, setLoading] = React.useState(true);
 	const [error, setError] = React.useState<string | null>(null);
 	const [search, setSearch] = React.useState("");
+	const [templates, setTemplates] = React.useState<MessageTemplate[]>([]);
+	const [tplOpen, setTplOpen] = React.useState(false);
+	const [tplKey, setTplKey] = React.useState("");
+	const [tplVars, setTplVars] = React.useState<string[]>([]);
+	const [tplLoading, setTplLoading] = React.useState(false);
 	const bottomRef = React.useRef<HTMLDivElement>(null);
 
 	const filtered = React.useMemo(() => {
@@ -66,7 +78,7 @@ export default function ConversasPage() {
 	const leadList = React.useCallback(async () => {
 		try {
 			const res = await api.get<ApiResponse<ClientLeadView[]>>("/leads")
-			setLeads(res.data.data ?? [])
+			// setLeads(res.data.data ?? [])
 			console.log(res.data.data)
 		} catch (err) {
 			setError(extractErrorMessage(err, "Erro ao carregar conversas."));
@@ -136,6 +148,51 @@ export default function ConversasPage() {
 		}
 	};
 
+	const selectedTpl = templates.find((t) => `${t.name}|${t.language}` === tplKey);
+
+	const toggleTemplates = async () => {
+		const next = !tplOpen;
+		setTplOpen(next);
+		if (!next || templates.length > 0) return;
+		setTplLoading(true);
+		try {
+			const res = await api.get<ApiResponse<MessageTemplate[]>>("/templates");
+			setTemplates((res.data.data ?? []).filter((t) => t.status === "APPROVED"));
+		} catch (err) {
+			setError(extractErrorMessage(err, "Erro ao carregar modelos."));
+		} finally {
+			setTplLoading(false);
+		}
+	};
+
+	const pickTemplate = (key: string) => {
+		setTplKey(key);
+		const t = templates.find((x) => `${x.name}|${x.language}` === key);
+		setTplVars(Array.from({ length: t?.variables ?? 0 }, (_, i) => (i === 0 ? selected?.name ?? "" : "")));
+	};
+
+	const handleSendTemplate = async () => {
+		if (!selected || !selectedTpl || sending) return;
+		setSending(true);
+		setError(null);
+		try {
+			const res = await api.post<ApiResponse<ChatMessage>>(
+				`/chat/conversations/${selected.lead_id}/template`,
+				{ template_name: selectedTpl.name, language: selectedTpl.language, variables: tplVars }
+			);
+			const msg = { ...res.data.data, created_at: new Date().toISOString() };
+			setMessages((prev) => (prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]));
+			setTplOpen(false);
+			setTplKey("");
+			setTplVars([]);
+			loadConversations();
+		} catch (err) {
+			setError(extractErrorMessage(err, "Falha ao enviar modelo."));
+		} finally {
+			setSending(false);
+		}
+	};
+
 	return (
 		<div>
 			<PageHeader title="Conversas" description="Converse com seus leads pelo WhatsApp." />
@@ -149,9 +206,9 @@ export default function ConversasPage() {
 						<Search className="pointer-events-none absolute left-5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 						<Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Pesquisar lead por nome" className="pl-8" />
 					</div>
-					<div className="relative p-3">
+					{/*<div className="relative p-3">
 						<Button onClick={() => leadList()}>Teste</Button>
-					</div>
+					</div>*/}
 					<div className="flex-1 overflow-y-auto">
 						{loading ? (
 							<p className="p-4 text-sm text-muted-foreground">Carregando…</p>
@@ -251,6 +308,58 @@ export default function ConversasPage() {
 								<div ref={bottomRef} />
 							</div>
 
+							{tplOpen && (
+								<div className="space-y-3 border-t border-border bg-muted/30 p-3">
+									{tplLoading ? (
+										<p className="text-sm text-muted-foreground">Carregando modelos…</p>
+									) : templates.length === 0 ? (
+										<p className="text-sm text-muted-foreground">
+											Nenhum modelo aprovado. Crie um em Modelos e aguarde a aprovação da Meta.
+										</p>
+									) : (
+										<>
+											<Select value={tplKey} onValueChange={pickTemplate}>
+												<SelectTrigger>
+													<SelectValue placeholder="Escolha um modelo aprovado" />
+												</SelectTrigger>
+												<SelectContent>
+													{templates.map((t) => (
+														<SelectItem key={t.id} value={`${t.name}|${t.language}`}>
+															{t.name}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+											{selectedTpl && (
+												<>
+													<p className="whitespace-pre-wrap rounded-md bg-card p-2 text-sm text-muted-foreground">
+														{selectedTpl.body}
+													</p>
+													{tplVars.map((v, i) => (
+														<Input
+															key={i}
+															value={v}
+															onChange={(e) =>
+																setTplVars((prev) => prev.map((p, j) => (j === i ? e.target.value : p)))
+															}
+															placeholder={`Valor para {{${i + 1}}}`}
+														/>
+													))}
+													<Button
+														type="button"
+														onClick={handleSendTemplate}
+														disabled={sending || tplVars.some((v) => !v.trim())}
+													>
+														{sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+														Enviar modelo
+													</Button>
+												</>
+											)}
+										</>
+									)}
+								</div>
+							)}
+
 							<form onSubmit={handleSend} className="flex gap-2 border-t border-border p-3">
 								<Input
 									value={text}
@@ -258,6 +367,16 @@ export default function ConversasPage() {
 									placeholder="Digite uma mensagem"
 									disabled={sending || !selected.whatsapp_number}
 								/>
+								<Button
+									type="button"
+									variant="outline"
+									onClick={toggleTemplates}
+									disabled={!selected.whatsapp_number}
+									title="Enviar modelo de mensagem"
+								>
+									<FileText className="h-4 w-4" />
+									Modelo
+								</Button>
 								<Button type="submit" disabled={sending || !text.trim() || !selected.whatsapp_number}>
 									{sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
 									Enviar
