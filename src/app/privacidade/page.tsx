@@ -13,7 +13,7 @@ const EMPRESA = "C MELO DESENVOLVIMENTO DE PROGRAMAS LTDA";
 const CNPJ = "69.575.998/0001-59";
 const ENDERECO = "RUA DOS ROUXINOIS, 409, AP 503 - SERRA - ES";
 const EMAIL_PRIVACIDADE = "cmelosdesenvolvimento@gmail.com";
-const ULTIMA_ATUALIZACAO = "22 de outubro de 2026";
+const ULTIMA_ATUALIZACAO = "5 de novembro de 2026";
 
 function Section({
 	title,
@@ -303,7 +303,30 @@ export default function PrivacidadePage() {
 					</p>
 				</Section>
 
-				<Section title="16. Contato">
+								<Section title="16. Mensagens por WhatsApp e consentimento dos leads">
+					<p>
+						O CMeloFlow permite que nossos clientes conversem com seus leads
+						pelo WhatsApp, usando o número de WhatsApp Business do próprio
+						cliente. Ao utilizar a plataforma para enviar mensagens, o
+						cliente declara e se compromete que:
+					</p>
+					<List
+						items={[
+							"envia mensagens apenas a pessoas com quem já tem relacionamento e que forneceram seu número e concordaram em ser contatadas pela empresa por WhatsApp (por exemplo, clientes, pessoas que solicitaram orçamento ou que enviaram mensagem à empresa);",
+							"possui e é responsável por comprovar esse consentimento (opt-in), inclusive em contatos importados de listas próprias;",
+							"não utiliza a plataforma para enviar mensagens a listas compradas ou de terceiros, nem a contatos desconhecidos;",
+							"respeita o pedido de qualquer pessoa que não queira mais receber mensagens, deixando de contatá-la;",
+							"cumpre a Política de Mensagens do WhatsApp Business, a Política Comercial do WhatsApp e a legislação aplicável, incluindo a LGPD.",
+						]}
+					/>
+					<p>
+						Como operador, tratamos esses dados conforme as instruções do
+						cliente. O descumprimento destas regras pode resultar na
+						suspensão do acesso ao envio de mensagens.
+					</p>
+				</Section>
+
+				<Section title="17. Contato">
 					<p>
 						Dúvidas ou solicitações sobre privacidade e proteção de dados:{" "}
 						<strong>{EMAIL_PRIVACIDADE}</strong>.
