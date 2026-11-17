@@ -16,6 +16,7 @@ import {
   Calendar,
   MessageSquare,
   FileText,
+  ShoppingCart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUserStore } from "@/lib/stores/user-store";
@@ -36,6 +37,12 @@ const clientNav: NavItem[] = [
     href: "/produtos",
     icon: Package,
     match: (p) => p.startsWith("/produtos"),
+  },
+  {
+    label: "Vendas",
+    href: "/vendas",
+    icon: ShoppingCart,
+    match: (p) => p.startsWith("/vendas"),
   },
   {
     label: "Leads",
@@ -73,6 +80,12 @@ const adminNav: NavItem[] = [
     href: "/admin/produtos",
     icon: Package,
     match: (p) => p.startsWith("/admin/produtos"),
+  },
+  {
+    label: "Vendas",
+    href: "/admin/vendas",
+    icon: ShoppingCart,
+    match: (p) => p.startsWith("/admin/vendas") || p.startsWith("/vendas"),
   },
   {
     label: "Conversas",

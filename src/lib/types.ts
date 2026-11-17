@@ -89,6 +89,64 @@ export interface Product {
 	//whatsapp_number?: string | null;
 }
 
+export type SaleStatus = "open" | "finalized" | "cancelled";
+
+export type PaymentMethod =
+	| "pix"
+	| "dinheiro"
+	| "cartao_credito"
+	| "cartao_debito"
+	| "boleto"
+	| "transferencia"
+	| "outro";
+
+export interface SaleItem {
+	id: number;
+	product_id: number | null;
+	description: string;
+	quantity: number;
+	unit_price_cents: number;
+	discount_cents: number;
+	total_cents: number;
+}
+
+export interface Sale {
+	id: number;
+	client_id: number;
+	number: number;
+	lead_id: number | null;
+	status: SaleStatus;
+	source: string | null;
+	discount_cents: number;
+	total_cents: number;
+	currency: string;
+	payment_method: PaymentMethod | string | null;
+	calendar_event_id: string | null;
+	notes: string | null;
+	finalized_at: string | null;
+	cancelled_at: string | null;
+	cancel_reason: string | null;
+	created_at: string | null;
+	updated_at: string | null;
+	lead_name?: string | null;
+	lead_whatsapp_number?: string | null;
+	client_name?: string | null;
+	items_count?: number;
+}
+
+export interface SaleDetail extends Sale {
+	items: SaleItem[];
+}
+
+export interface SaleDashboardRow {
+	client_id: number;
+	month: string; // yyyy-mm
+	source: string;
+	sales_count: number;
+	revenue_cents: number;
+	avg_ticket_cents: number;
+}
+
 
 export interface Workflow {
 	id: string

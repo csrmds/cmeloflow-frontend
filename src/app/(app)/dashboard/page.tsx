@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   Package,
+  ShoppingCart,
   Sparkles,
   Users,
 } from "lucide-react";
@@ -78,6 +79,12 @@ export default function DashboardPage() {
               description="Visualize todos os produtos cadastrados."
               icon={Package}
             />
+            <DashCard
+              href="/admin/vendas"
+              title="Vendas"
+              description="Acompanhe as vendas de todos os clientes."
+              icon={ShoppingCart}
+            />
           </>
         ) : (
           <>
@@ -86,6 +93,12 @@ export default function DashboardPage() {
               title="Meus Produtos"
               description="Cadastre e organize seus produtos e serviços."
               icon={Package}
+            />
+            <DashCard
+              href="/vendas"
+              title="Minhas Vendas"
+              description="Registre vendas e acompanhe o faturamento."
+              icon={ShoppingCart}
             />
             <DashCard
               href="/leads"

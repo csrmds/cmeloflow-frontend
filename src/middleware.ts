@@ -4,6 +4,7 @@ import type { NextRequest } from "next/server";
 const PROTECTED_PREFIXES = [
 	"/dashboard",
 	"/produtos",
+	"/vendas",
 	"/leads",
 	"/perfil",
 	"/admin",
@@ -37,6 +38,7 @@ export const config = {
 	matcher: [
 		"/dashboard/:path*",
 		"/produtos/:path*",
+		"/vendas/:path*",
 		"/leads/:path*",
 		"/perfil/:path*",
 		"/admin/:path*",
