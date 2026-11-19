@@ -6,12 +6,27 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { AtSign, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { BoardLead } from "@/lib/types";
+import type { BoardLead, StageKind } from "@/lib/types";
 
 export const leadKey = (id: number) => `lead-${id}`;
 
-export function LeadCardContent({ lead, overlay }: { lead: BoardLead; overlay?: boolean }) {
+function daysInStage(value: string | null): number | null {
+	if (!value) return null;
+	const diff = Date.now() - new Date(value).getTime();
+	return Number.isFinite(diff) ? Math.floor(diff / 86_400_000) : null;
+}
+
+export function LeadCardContent({
+	lead,
+	overlay,
+	stageKind = "open",
+}: {
+	lead: BoardLead;
+	overlay?: boolean;
+	stageKind?: StageKind;
+}) {
 	const human = Number(lead.human_handover) === 1;
+	const days = stageKind === "open" ? daysInStage(lead.stage_changed_at) : null;
 	return (
 		<div
 			className={cn(
@@ -46,6 +61,11 @@ export function LeadCardContent({ lead, overlay }: { lead: BoardLead; overlay?: 
 					</p>
 				)}
 			</div>
+			{days !== null && days >= 7 && (
+				<p className="mt-2 text-[11px] font-medium text-amber-600 dark:text-amber-400">
+					Parado há {days} dias
+				</p>
+			)}
 			{lead.notes && (
 				<p className="mt-2 line-clamp-2 text-xs text-muted-foreground/80">{lead.notes}</p>
 			)}
@@ -53,7 +73,15 @@ export function LeadCardContent({ lead, overlay }: { lead: BoardLead; overlay?: 
 	);
 }
 
-export function KanbanLeadCard({ lead, basePath }: { lead: BoardLead; basePath: string }) {
+export function KanbanLeadCard({
+	lead,
+	basePath,
+	stageKind,
+}: {
+	lead: BoardLead;
+	basePath: string;
+	stageKind: StageKind;
+}) {
 	const router = useRouter();
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: leadKey(lead.id),
@@ -68,7 +96,7 @@ export function KanbanLeadCard({ lead, basePath }: { lead: BoardLead; basePath: 
 			{...attributes}
 			{...listeners}
 		>
-			<LeadCardContent lead={lead} />
+			<LeadCardContent lead={lead} stageKind={stageKind} />
 		</div>
 	);
 }

@@ -76,6 +76,7 @@ export interface BoardLead {
 	notes: string | null;
 	stage_id: number | null;
 	stage_position: number;
+	stage_changed_at: string | null;
 	created_at: string | null;
 	updated_at: string | null;
 }
@@ -88,10 +89,14 @@ export interface BoardStage {
 	kind: StageKind;
 	is_default: number | boolean;
 	leads: BoardLead[];
+	hidden_count?: number;
 }
+
+export type BoardPeriod = "7" | "30" | "90" | "all";
 
 export interface BoardData {
 	stages: BoardStage[];
+	days: number | null;
 }
 
 export interface ClientLeadView {

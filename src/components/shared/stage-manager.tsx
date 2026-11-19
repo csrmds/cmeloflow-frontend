@@ -251,12 +251,12 @@ export function StageManager({ open, onOpenChange, stages, onChanged }: StageMan
 					<DialogHeader>
 						<DialogTitle>Remover a raia &quot;{toDelete?.name}&quot;?</DialogTitle>
 						<DialogDescription>
-							{toDelete && toDelete.leads.length > 0
-								? `Os ${toDelete.leads.length} lead(s) desta raia serão movidos para a raia escolhida.`
+							{toDelete && toDelete.leads.length + (toDelete.hidden_count ?? 0) > 0
+								? `Os ${toDelete.leads.length + (toDelete.hidden_count ?? 0)} lead(s) desta raia serão movidos para a raia escolhida.`
 								: "Esta raia não tem leads."}
 						</DialogDescription>
 					</DialogHeader>
-					{toDelete && toDelete.leads.length > 0 && (
+					{toDelete && toDelete.leads.length + (toDelete.hidden_count ?? 0) > 0 && (
 						<div className="space-y-1.5">
 							<Label>Mover leads para</Label>
 							<Select value={moveTo} onValueChange={setMoveTo}>

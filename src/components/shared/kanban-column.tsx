@@ -37,11 +37,16 @@ export function KanbanColumn({ stage, basePath }: { stage: BoardStage; basePath:
 					strategy={verticalListSortingStrategy}
 				>
 					{stage.leads.map((lead) => (
-						<KanbanLeadCard key={lead.id} lead={lead} basePath={basePath} />
+						<KanbanLeadCard key={lead.id} lead={lead} basePath={basePath} stageKind={stage.kind} />
 					))}
 				</SortableContext>
 				{stage.leads.length === 0 && (
 					<p className="py-6 text-center text-xs text-muted-foreground">Arraste leads para cá</p>
+				)}
+				{(stage.hidden_count ?? 0) > 0 && (
+					<p className="rounded-md border border-dashed border-border py-2 text-center text-xs text-muted-foreground">
+						+{stage.hidden_count} lead(s) fora do período
+					</p>
 				)}
 			</div>
 		</div>

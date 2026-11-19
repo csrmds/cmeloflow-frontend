@@ -122,6 +122,8 @@ export function KanbanBoard({ stages, onReload, basePath = "/leads" }: KanbanBoa
 				stage_id: col.id,
 				position: newIndex,
 			});
+			// Raias Ganho/Perdido ordenam por entrada recente: recarrega para refletir a ordem real
+			if (col.kind !== "open") await onReload();
 		} catch (err) {
 			setError(extractErrorMessage(err, "Não foi possível mover o lead."));
 			setColumns(snapshot.current);
