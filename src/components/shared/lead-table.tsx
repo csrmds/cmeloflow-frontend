@@ -14,10 +14,10 @@ import {
 import type { ClientLeadView } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 
-const statusLabel: Record<string, string> = {
-	novo: "Novo",
-	em_atendimento: "Em atendimento",
-	fechado: "Fechado",
+const kindBadge: Record<string, string> = {
+	open: "bg-secondary text-foreground",
+	won: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+	lost: "bg-red-500/10 text-red-600 dark:text-red-400",
 };
 
 
@@ -70,8 +70,8 @@ export function LeadTable({
 								<TableCell> {lead.client_name || `#${lead.client_id}`} </TableCell>
 							)}
 							<TableCell>
-								<span className="rounded-md bg-secondary px-2 py-0.5 text-xs">
-									{statusLabel[lead.lead_status ?? ""] ?? lead.lead_status ?? "—"}
+								<span className={`rounded-md px-2 py-0.5 text-xs ${kindBadge[lead.lead_stage_kind ?? "open"]}`}>
+									{lead.lead_stage_name ?? "—"}
 								</span>
 							</TableCell>
 							<TableCell>

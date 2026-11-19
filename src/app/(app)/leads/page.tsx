@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Columns3, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/shared/page-header";
 import { LeadTable } from "@/components/shared/lead-table";
@@ -32,12 +32,20 @@ export default function LeadsPage() {
 				title="Leads"
 				description="Acompanhe os leads capturados pela automação."
 				actions={
+					<>
+					<Button variant="outline" asChild>
+						<Link href="/leads/quadro">
+							<Columns3 className="h-4 w-4" />
+							Quadro
+						</Link>
+					</Button>
 					<Button asChild>
 						<Link href="/leads/novo">
 							<Plus className="h-4 w-4" />
 							Novo Lead
 						</Link>
 					</Button>
+					</>
 				}
 			/>
 			<LeadTable leads={items} loading={loading} basePath="/leads" />

@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { api, extractErrorMessage } from "@/lib/api";
-import { Lead } from "@/lib/types";
+import { ApiResponse, Lead, LeadStage } from "@/lib/types";
 
 const schema = z.object({
 	name: z.string().optional(),
@@ -29,7 +29,7 @@ const schema = z.object({
 	instagram_username: z.string().optional(),
 	instagram_scoped_userid: z.string().optional(),
 	source: z.enum(["whatsapp", "instagram", "comment", "manual"]),
-	status: z.enum(["novo", "em_atendimento", "fechado"]),
+	stage_id: z.string().optional(),
 	human_handover: z.boolean(),
 	notes: z.string().optional(),
 	client_id: z.string().optional(),
@@ -68,7 +68,7 @@ export function LeadForm({
 			instagram_username: lead?.instagram_username ?? "",
 			instagram_scoped_userid: lead?.instagram_scoped_userid ?? "",
 			source: ((lead?.source as "whatsapp" | "instagram" | "comment" | "manual") ?? "manual"),
-			status: ((lead?.status as "novo" | "em_atendimento" | "fechado") ?? "novo"),
+			stage_id: lead?.stage_id != null ? String(lead.stage_id) : "",
 			human_handover: Number(lead?.human_handover) === 1,
 			notes: lead?.notes ?? "",
 			client_id: lead?.client_id != null ? String(lead.client_id) : "",
@@ -76,13 +76,31 @@ export function LeadForm({
 	});
 
 	const source = watch("source");
-	const status = watch("status");
+	const stageId = watch("stage_id");
+
+	const [stages, setStages] = React.useState<LeadStage[]>([]);
+	React.useEffect(() => {
+		if (!lead) return;
+		let cancelled = false;
+		(async () => {
+			try {
+				const res = await api.get<ApiResponse<LeadStage[]>>("/stages", {
+					params: { client_id: lead.client_id },
+				});
+				if (!cancelled) setStages(res.data.data);
+			} catch {
+				// sem raias carregadas, o campo fica oculto
+			}
+		})();
+		return () => { cancelled = true; };
+	}, [lead]);
 	const handover = watch("human_handover");
 
 	const onSubmit = async (values: FormValues) => {
 		setServerError(null);
 		const payload = {
 			...values,
+			stage_id: values.stage_id ? Number(values.stage_id) : undefined,
 			client_id: values.client_id ? Number(values.client_id) : undefined,
 		};
 		try {
@@ -168,22 +186,26 @@ export function LeadForm({
 						</Select>
 					</div>
 
-					<div className="space-y-1.5">
-						<Label>Status</Label>
-						<Select 
-							value={status}
-							onValueChange={(v) => setValue( "status", v as "novo" | "em_atendimento" | "fechado" ) }
-						>
-							<SelectTrigger>
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="novo">Novo</SelectItem>
-								<SelectItem value="em_atendimento">Em atendimento</SelectItem>
-								<SelectItem value="fechado">Fechado</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
+					{isEdit && stages.length > 0 && (
+						<div className="space-y-1.5">
+							<Label>Raia</Label>
+							<Select
+								value={stageId}
+								onValueChange={(v) => setValue("stage_id", v)}
+							>
+								<SelectTrigger>
+									<SelectValue placeholder="Selecione" />
+								</SelectTrigger>
+								<SelectContent>
+									{stages.map((s) => (
+										<SelectItem key={s.id} value={String(s.id)}>
+											{s.name}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
+					)}
 
 					<div className="flex items-center gap-3 sm:col-span-2">
 						<Switch id="human_handover" checked={handover} onCheckedChange={(v) => setValue("human_handover", v)} />

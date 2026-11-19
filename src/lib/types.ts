@@ -44,11 +44,54 @@ export interface Lead {
 	whatsapp_number: string | null;
 	email: string | null;
 	source: string | null;
-	status: string | null;
+	stage_id: number | null;
+	stage_position: number;
 	human_handover: number;
 	notes: string | null;
 	created_at: string | null;
 	updated_at: string | null;
+}
+
+export type StageKind = "open" | "won" | "lost";
+
+export interface LeadStage {
+	id: number;
+	client_id: number;
+	name: string;
+	color: string | null;
+	position: number;
+	kind: StageKind;
+	is_default: number | boolean;
+	leads_count?: number;
+}
+
+export interface BoardLead {
+	id: number;
+	name: string | null;
+	whatsapp_number: string | null;
+	email: string | null;
+	instagram_username: string | null;
+	source: string | null;
+	human_handover: string | number | null;
+	notes: string | null;
+	stage_id: number | null;
+	stage_position: number;
+	created_at: string | null;
+	updated_at: string | null;
+}
+
+export interface BoardStage {
+	id: number;
+	name: string;
+	color: string | null;
+	position: number;
+	kind: StageKind;
+	is_default: number | boolean;
+	leads: BoardLead[];
+}
+
+export interface BoardData {
+	stages: BoardStage[];
 }
 
 export interface ClientLeadView {
@@ -63,7 +106,9 @@ export interface ClientLeadView {
 	lead_instagram_username: string | null;
 	lead_whatsapp_number: string | null;
 	lead_email: string | null;
-	lead_status: string | null;
+	lead_stage_id: number | null;
+	lead_stage_name: string | null;
+	lead_stage_kind: StageKind | null;
 	lead_source: string | null;
 	lead_human_handover: string | number | null;
 	lead_updated_at: string | null;
